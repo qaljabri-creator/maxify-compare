@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<!-- build 8 -->
-<html lang="ar" dir="rtl" data-theme="dark" data-build="8">
+<!-- build 9 -->
+<html lang="ar" dir="rtl" data-theme="dark" data-build="9">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -60,13 +60,6 @@ body{
 
 /* The embed cannot read the portal's theme, so it must not depend on it.
    It carries its own opaque surface and stays legible on a light or dark backdrop. */
-.langlink{
-  position:absolute;inset-block-start:10px;inset-inline-end:14px;z-index:2;
-  font:inherit;font-size:12px;font-weight:500;color:var(--ink-3);
-  background:none;border:0;padding:4px 6px;cursor:pointer;border-radius:6px;
-}
-.langlink:hover{color:var(--ink)}
-.langlink[hidden]{display:none}
 .wrap{
   position:relative;
   max-width:960px;margin:0 auto;padding:22px 22px 26px;
@@ -223,8 +216,6 @@ dialog::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
 </head>
 <body>
 <div class="wrap">
-
-  <button class="langlink" id="langlink" hidden></button>
 
   <div class="bar" id="testbar">
     <div class="sp"></div>
@@ -488,9 +479,6 @@ function render(){
 
   $("sharedList").innerHTML = L.shared.map(s=>`<li>${s}</li>`).join("");
 
-  const ll = $("langlink");
-  ll.hidden = q.get("switcher") !== "1";
-  ll.textContent = lang === "ar" ? "English" : "عربي";
   syncCols();
 }
 
@@ -543,8 +531,6 @@ function openPlan(id){
 document.addEventListener("click", e=>{
   const o = e.target.closest("[data-open]");
   if (o) return openPlan(o.dataset.open);
-
-  if (e.target.closest("#langlink")){ lang = lang === "ar" ? "en" : "ar"; render(); return; }
 
   const tab = e.target.closest("[data-tab]");
   if (tab){ active = +tab.dataset.tab; syncCols(); return; }
@@ -621,7 +607,7 @@ addEventListener("message", e => {
   if (applyContext(d)) render();
 });
 
-console.log("compare-accounts build 8 | theme:", theme, "| lang:", lang);
+console.log("compare-accounts build 9 | theme:", theme, "| lang:", lang);
 render();
 </script>
 </body>
