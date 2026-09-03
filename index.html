@@ -8,36 +8,40 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* ---------- tokens ---------- */
+/* ---------- tokens ----------
+   Values mirror B2CORE's own design tokens (read from the portal's <html> element).
+   Each var() also tries the parent name first, so if the embed is ever served
+   same-origin / injected, it inherits the portal palette automatically.
+   Cross-origin it simply falls back to the hard-coded value. Zero cost either way. */
 :root{
-  color-scheme: light;
-  --ink:#0B1116;
-  --ink-2:rgba(11,17,22,.60);
-  --ink-3:rgba(11,17,22,.40);
-  --line:rgba(11,17,22,.15);
-  --line-soft:rgba(11,17,22,.07);
-  --fill:rgba(11,17,22,.035);
-  --fill-2:rgba(11,17,22,.06);
-  --accent:#0A9DA2;
-  --accent-soft:rgba(10,157,162,.12);
-  --accent-ink:#FFFFFF;
-  --scrim:rgba(11,17,22,.34);
-  --sheet:#FBFDFD;
-}
-[data-theme="dark"]{
   color-scheme: dark;
-  --ink:#E9F3F4;
-  --ink-2:rgba(233,243,244,.62);
-  --ink-3:rgba(233,243,244,.40);
-  --line:rgba(233,243,244,.17);
-  --line-soft:rgba(233,243,244,.08);
-  --fill:rgba(233,243,244,.045);
-  --fill-2:rgba(233,243,244,.08);
-  --accent:#19FFFD;
-  --accent-soft:rgba(25,255,253,.13);
-  --accent-ink:#04191B;
-  --scrim:rgba(2,8,10,.60);
-  --sheet:#0E1519;
+  --ink:      var(--text-main, #FFFFFF);
+  --ink-2:    var(--text-secondary, #7B8AA4);
+  --ink-3:    #7B8AA4A6;
+  --line:     var(--divider, #324462);
+  --line-soft:#32446299;
+  --fill:     rgba(255,255,255,.035);
+  --fill-2:   var(--field, #2B3B54);
+  --accent-c: var(--accent, #1AE7EF);
+  --accent-soft: var(--accent-10, #00BBCC1A);
+  --accent-ink:  #06131A;
+  --scrim:    #0A1018CC;
+  --sheet:    var(--card, #1F2A3C);
+}
+[data-theme="light"]{
+  color-scheme: light;
+  --ink:      #16202E;
+  --ink-2:    #5A6B85;
+  --ink-3:    #8494AB;
+  --line:     #DCE3EC;
+  --line-soft:#E7EDF3;
+  --fill:     rgba(22,32,46,.03);
+  --fill-2:   #EDF1F6;
+  --accent-c: #0A8F97;
+  --accent-soft: rgba(10,143,151,.10);
+  --accent-ink:  #FFFFFF;
+  --scrim:    rgba(22,32,46,.34);
+  --sheet:    #FFFFFF;
 }
 
 *{box-sizing:border-box}
@@ -49,7 +53,7 @@ body{
   line-height:1.5;
   -webkit-font-smoothing:antialiased;
 }
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+:focus-visible{outline:2px solid var(--accent-c);outline-offset:2px}
 
 .wrap{max-width:920px;margin:0 auto;padding:18px 16px 26px}
 
@@ -60,14 +64,8 @@ body{
 }
 .bar[hidden]{display:none}
 .bar .sp{flex:1}
-.seg{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
-.seg button{
-  font:inherit;font-size:12.5px;font-weight:500;background:none;border:0;color:var(--ink-2);
-  padding:5px 12px;cursor:pointer;
-}
-.seg button[aria-pressed="true"]{background:var(--fill-2);color:var(--ink)}
 .pick{
-  font:inherit;font-size:12.5px;color:var(--ink);background:var(--fill);
+  min-width:118px;font:inherit;font-size:12.5px;color:var(--ink);background:var(--fill-2);
   border:1px solid var(--line);border-radius:999px;padding:5px 10px;cursor:pointer;
 }
 .bar label{font-size:12.5px;color:var(--ink-3)}
@@ -97,9 +95,9 @@ h1{
   background:none;border:0;padding:0;cursor:pointer;text-align:start;
   border-bottom:2px solid transparent;
 }
-.plan-btn:hover{border-bottom-color:var(--accent)}
+.plan-btn:hover{border-bottom-color:var(--accent-c)}
 .mine{
-  font-size:10.5px;font-weight:500;color:var(--accent-ink);background:var(--accent);
+  font-size:10.5px;font-weight:500;color:var(--accent-ink);background:var(--accent-c);
   border-radius:999px;padding:1px 7px;letter-spacing:.01em;
 }
 
@@ -122,7 +120,7 @@ h1{
 
 .go{
   display:inline-flex;font:inherit;font-size:13px;font-weight:600;
-  background:var(--accent);color:var(--accent-ink);border:0;border-radius:8px;
+  background:var(--accent-c);color:var(--accent-ink);border:0;border-radius:8px;
   padding:8px 13px;cursor:pointer;text-decoration:none;width:100%;justify-content:center;
 }
 .go.ghost{background:none;color:var(--ink);border:1px solid var(--line)}
@@ -132,12 +130,13 @@ h1{
 .shared h2{font-size:13.5px;font-weight:600;margin:0 0 12px;color:var(--ink)}
 .shared ul{
   list-style:none;margin:0;padding:0;
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:9px 20px;
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 22px;
 }
+@media (max-width:560px){ .shared ul{grid-template-columns:repeat(2,minmax(0,1fr))} }
 .shared li{font-size:13px;color:var(--ink-2);display:flex;gap:8px;align-items:baseline}
 .shared li::before{
   content:"";width:5px;height:5px;flex:none;border-radius:50%;
-  background:var(--accent);transform:translateY(-2px);
+  background:var(--accent-c);transform:translateY(-2px);
 }
 
 .legal{margin-top:24px;padding-top:14px;border-top:1px solid var(--line-soft);
@@ -171,11 +170,11 @@ dialog::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
 .diff .k{color:var(--ink-2);font-size:12.5px}
 .diff .from{color:var(--ink-3);text-decoration:line-through;font-size:12.5px;font-variant-numeric:tabular-nums}
 .diff .to{font-weight:600;font-variant-numeric:tabular-nums}
-.diff .to.up{color:var(--accent)}
+.diff .to.up{color:var(--accent-c)}
 
 .note{
   font-size:12.5px;color:var(--ink-2);background:var(--fill);
-  border-inline-start:2px solid var(--accent);padding:10px 12px;
+  border-inline-start:2px solid var(--accent-c);padding:10px 12px;
   border-radius:0 8px 8px 0;margin-bottom:16px;line-height:1.6;
 }
 [dir="rtl"] .note{border-radius:8px 0 0 8px}
@@ -191,7 +190,7 @@ dialog::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
     background:var(--fill);color:var(--ink-2);border:1px solid var(--line);
     border-radius:999px;padding:6px 14px;cursor:pointer;
   }
-  .tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+  .tabs button[aria-selected="true"]{background:var(--accent-c);color:var(--accent-ink);border-color:transparent}
   .grid{grid-template-columns:1fr auto}
   .grid > *[data-col]:not([data-col="0"]){display:none}
   .grid > *[data-col="0"]{display:flex}
@@ -209,14 +208,6 @@ dialog::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
 <div class="wrap">
 
   <div class="bar" id="testbar">
-    <div class="seg" role="group" aria-label="Language">
-      <button type="button" data-lang="ar">عربي</button>
-      <button type="button" data-lang="en">EN</button>
-    </div>
-    <div class="seg" role="group" aria-label="Theme">
-      <button type="button" data-theme-btn="dark">Dark</button>
-      <button type="button" data-theme-btn="light">Light</button>
-    </div>
     <div class="sp"></div>
     <label for="mine" id="mineLbl"></label>
     <select class="pick" id="mine">
@@ -285,6 +276,7 @@ const T = {
     title:"المقارنة بين الحسابات",
     lede:"أربعة حسابات تختلف في أربع نقاط فقط. باقي الشروط واحدة عند الجميع.",
     rows:{deposit:"أقل إيداع", commission:"العمولة", spread:"السبريد", leverage:"الرافعة"},
+    page:"صفحة الحساب",
     perLot:"للّوت", noComm:"بدون عمولة", from:"من", points:"نقطة", raw:"+ سبريد خام",
     upTo:"حتى",
     open:"افتح حساب",
@@ -309,6 +301,7 @@ const T = {
     title:"Compare accounts",
     lede:"Four accounts that differ on four points only. Everything else is identical.",
     rows:{deposit:"Minimum deposit", commission:"Commission", spread:"Spread", leverage:"Leverage"},
+    page:"Account page",
     perLot:"per lot", noComm:"None", from:"from", points:"points", raw:"+ raw spread",
     upTo:"up to",
     open:"Open account",
@@ -335,8 +328,52 @@ const T = {
    STATE
    ======================================================================= */
 const q = new URLSearchParams(location.search);
-let lang  = q.get("lang") === "en" ? "en" : "ar";
-let theme = q.get("theme") || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+function readParentLang(){
+  try{ const l = window.parent.document.documentElement.lang; return l ? l.slice(0,2) : null; }
+  catch(e){ return null; }
+}
+function paramLang(){
+  for (const k of ["lang","locale","language","l","hl","ui-locale"]){
+    const v = (q.get(k) || "").toLowerCase();
+    if (v) return v.slice(0,2);
+  }
+  return null;
+}
+let lang = paramLang() || readParentLang() || "ar";
+if (lang !== "en") lang = "ar";
+/* Theme is never a button. It is resolved, in order, from:
+   1. an explicit ?theme= on the URL          (works today if B2CORE ever templates the URL)
+   2. the parent document, read same-origin   (silently blocked cross-origin, by design)
+   3. a postMessage from the parent           (applied live, see listener below)
+   4. dark, which is what B2CORE ships        */
+function readParentTheme(){
+  try{
+    const doc = window.parent.document;
+    const cls = doc.body.classList;
+    if (cls.contains("light-theme")) return "light";
+    if (cls.contains("dark-theme"))  return "dark";
+    const bg = getComputedStyle(doc.documentElement).getPropertyValue("--background").trim();
+    if (bg) return luminance(bg) > .5 ? "light" : "dark";
+  }catch(e){ /* cross-origin: expected, fall through */ }
+  return null;
+}
+function luminance(hex){
+  const m = hex.replace("#","");
+  if (m.length < 6) return 0;
+  const r = parseInt(m.slice(0,2),16), g = parseInt(m.slice(2,4),16), b = parseInt(m.slice(4,6),16);
+  return (0.2126*r + 0.7152*g + 0.0722*b) / 255;
+}
+/* B2CORE may name the parameter anything. Sniff every common spelling and value. */
+function paramTheme(){
+  for (const k of ["theme","mode","colorScheme","color_scheme","color-scheme","skin","appearance","ui-theme"]){
+    const v = (q.get(k) || "").toLowerCase();
+    if (!v) continue;
+    if (/light|day|white/.test(v)) return "light";
+    if (/dark|night|black/.test(v)) return "dark";
+  }
+  return null;
+}
+let theme = paramTheme() || readParentTheme() || "dark";
 let mine  = (q.get("account") || "").toLowerCase();
 let active = 0;
 if (q.get("ui") === "clean") document.getElementById("testbar").hidden = true;
@@ -365,9 +402,17 @@ const BEST = {
   spread:    Math.min(...PLANS.map(p=>p.spreadFrom)),
   leverage:  Math.max(...PLANS.map(p=>p.leverage))
 };
-const isBest = (p,k) => ({
-  deposit:p.deposit, commission:p.commission, spread:p.spreadFrom, leverage:p.leverage
-}[k]) === BEST[k];
+const RAW = {
+  deposit:p=>p.deposit, commission:p=>p.commission, spread:p=>p.spreadFrom, leverage:p=>p.leverage
+};
+/* a value is marked only when it is the single best in its row.
+   ties (three accounts at 1:300, two at zero commission) get no marker,
+   because a marker on half the table stops meaning anything. */
+const UNIQUE = {};
+Object.keys(BEST).forEach(k=>{
+  UNIQUE[k] = PLANS.filter(p => RAW[k](p) === BEST[k]).length === 1;
+});
+const isBest = (p,k) => UNIQUE[k] && RAW[k](p) === BEST[k];
 
 /* =======================================================================
    RENDER
@@ -385,10 +430,6 @@ function render(){
   $("mineLbl").textContent = L.mineLbl;
   $("mine").value = mine;
 
-  document.querySelectorAll("[data-lang]").forEach(b =>
-    b.setAttribute("aria-pressed", b.dataset.lang === lang));
-  document.querySelectorAll("[data-theme-btn]").forEach(b =>
-    b.setAttribute("aria-pressed", b.dataset.themeBtn === theme));
 
   /* tabs (narrow only) */
   $("tabs").innerHTML = PLANS.map((p,i)=>
@@ -458,8 +499,8 @@ function openPlan(id){
     : L.noteCost;
 
   $("dlgGo").textContent = L.open + " " + p.name;
-  $("dlgGo").href = p.url;
-  $("dlgMore").textContent = L.details;
+  $("dlgGo").href = `https://my.maxifyfx.com/${lang}/platforms/mt5`;
+  $("dlgMore").textContent = L.page;
   $("dlgMore").href = p.more;
   $("dlg").showModal();
 }
@@ -474,15 +515,21 @@ document.addEventListener("click", e=>{
   const tab = e.target.closest("[data-tab]");
   if (tab){ active = +tab.dataset.tab; syncCols(); return; }
 
-  const lb = e.target.closest("[data-lang]");
-  if (lb){ lang = lb.dataset.lang; render(); return; }
-
-  const tb = e.target.closest("[data-theme-btn]");
-  if (tb){ theme = tb.dataset.themeBtn; render(); return; }
 });
 $("mine").addEventListener("change", e=>{ mine = e.target.value; render(); });
 $("dlgClose").addEventListener("click", ()=> $("dlg").close());
 $("dlg").addEventListener("click", e=>{ if (e.target === $("dlg")) $("dlg").close(); });
+
+/* If B2CORE is ever configured to notify the frame, this picks it up with no further work.
+   Accepted shape: { theme: "dark"|"light", lang: "ar"|"en" } */
+addEventListener("message", e => {
+  if (!/(^https:\/\/)([a-z0-9-]+\.)*(maxifyfx\.com|b2broker\.com)$/.test(e.origin)) return;
+  const d = e.data || {};
+  let changed = false;
+  if (d.theme === "dark" || d.theme === "light"){ theme = d.theme; changed = true; }
+  if (d.lang  === "ar"   || d.lang  === "en"  ){ lang  = d.lang;  changed = true; }
+  if (changed) render();
+});
 
 render();
 </script>
