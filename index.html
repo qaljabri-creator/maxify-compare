@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" data-theme="dark">
+<!-- build 11 -->
+<html lang="ar" dir="rtl" data-theme="dark" data-build="11">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,36 +9,42 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* ---------- tokens ---------- */
+/* ---------- tokens ----------
+   Values mirror B2CORE's own design tokens (read from the portal's <html> element).
+   Each var() also tries the parent name first, so if the embed is ever served
+   same-origin / injected, it inherits the portal palette automatically.
+   Cross-origin it simply falls back to the hard-coded value. Zero cost either way. */
 :root{
-  color-scheme: light;
-  --ink:#0B1116;
-  --ink-2:rgba(11,17,22,.60);
-  --ink-3:rgba(11,17,22,.40);
-  --line:rgba(11,17,22,.15);
-  --line-soft:rgba(11,17,22,.07);
-  --fill:rgba(11,17,22,.035);
-  --fill-2:rgba(11,17,22,.06);
-  --accent:#0A9DA2;
-  --accent-soft:rgba(10,157,162,.12);
-  --accent-ink:#FFFFFF;
-  --scrim:rgba(11,17,22,.34);
-  --sheet:#FBFDFD;
-}
-[data-theme="dark"]{
   color-scheme: dark;
-  --ink:#E9F3F4;
-  --ink-2:rgba(233,243,244,.62);
-  --ink-3:rgba(233,243,244,.40);
-  --line:rgba(233,243,244,.17);
-  --line-soft:rgba(233,243,244,.08);
-  --fill:rgba(233,243,244,.045);
-  --fill-2:rgba(233,243,244,.08);
-  --accent:#19FFFD;
-  --accent-soft:rgba(25,255,253,.13);
-  --accent-ink:#04191B;
-  --scrim:rgba(2,8,10,.60);
-  --sheet:#0E1519;
+  --ink:      var(--text-main, #FFFFFF);
+  --ink-2:    var(--text-secondary, #7B8AA4);
+  --ink-3:    #7B8AA4A6;
+  --line:     var(--divider, #324462);
+  --line-soft:#32446299;
+  --fill:     rgba(255,255,255,.035);
+  --fill-2:   var(--field, #2B3B54);
+  --accent-c: var(--accent, #1AE7EF);
+  --accent-soft: var(--accent-10, #00BBCC1A);
+  --accent-ink:  #06131A;
+  --scrim:    #0A1018CC;
+  --sheet:    var(--card, #1F2A3C);
+  --panel:    var(--background, #171F2B);
+}
+[data-theme="light"]{
+  color-scheme: light;
+  --ink:      #16202E;
+  --ink-2:    #5A6B85;
+  --ink-3:    #8494AB;
+  --line:     #DCE3EC;
+  --line-soft:#E7EDF3;
+  --fill:     rgba(22,32,46,.03);
+  --fill-2:   #EDF1F6;
+  --accent-c: #0A8F97;
+  --accent-soft: rgba(10,143,151,.10);
+  --accent-ink:  #FFFFFF;
+  --scrim:    rgba(22,32,46,.34);
+  --sheet:    #FFFFFF;
+  --panel:    #FFFFFF;
 }
 
 *{box-sizing:border-box}
@@ -49,9 +56,16 @@ body{
   line-height:1.5;
   -webkit-font-smoothing:antialiased;
 }
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+:focus-visible{outline:2px solid var(--accent-c);outline-offset:2px}
 
-.wrap{max-width:920px;margin:0 auto;padding:18px 16px 26px}
+/* The embed cannot read the portal's theme, so it must not depend on it.
+   It carries its own opaque surface and stays legible on a light or dark backdrop. */
+.wrap{
+  position:relative;
+  max-width:960px;margin:0 auto;padding:22px 22px 26px;
+  background:var(--panel);border:1px solid var(--line);border-radius:14px;
+}
+@media (max-width:620px){ .wrap{border:0;border-radius:0;padding:16px 12px 22px} }
 
 /* ---------- test bar ---------- */
 .bar{
@@ -60,14 +74,8 @@ body{
 }
 .bar[hidden]{display:none}
 .bar .sp{flex:1}
-.seg{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
-.seg button{
-  font:inherit;font-size:12.5px;font-weight:500;background:none;border:0;color:var(--ink-2);
-  padding:5px 12px;cursor:pointer;
-}
-.seg button[aria-pressed="true"]{background:var(--fill-2);color:var(--ink)}
 .pick{
-  font:inherit;font-size:12.5px;color:var(--ink);background:var(--fill);
+  min-width:118px;font:inherit;font-size:12.5px;color:var(--ink);background:var(--fill-2);
   border:1px solid var(--line);border-radius:999px;padding:5px 10px;cursor:pointer;
 }
 .bar label{font-size:12.5px;color:var(--ink-3)}
@@ -97,9 +105,9 @@ h1{
   background:none;border:0;padding:0;cursor:pointer;text-align:start;
   border-bottom:2px solid transparent;
 }
-.plan-btn:hover{border-bottom-color:var(--accent)}
+.plan-btn:hover{border-bottom-color:var(--accent-c)}
 .mine{
-  font-size:10.5px;font-weight:500;color:var(--accent-ink);background:var(--accent);
+  font-size:10.5px;font-weight:500;color:var(--accent-ink);background:var(--accent-c);
   border-radius:999px;padding:1px 7px;letter-spacing:.01em;
 }
 
@@ -122,7 +130,7 @@ h1{
 
 .go{
   display:inline-flex;font:inherit;font-size:13px;font-weight:600;
-  background:var(--accent);color:var(--accent-ink);border:0;border-radius:8px;
+  background:var(--accent-c);color:var(--accent-ink);border:0;border-radius:8px;
   padding:8px 13px;cursor:pointer;text-decoration:none;width:100%;justify-content:center;
 }
 .go.ghost{background:none;color:var(--ink);border:1px solid var(--line)}
@@ -132,12 +140,13 @@ h1{
 .shared h2{font-size:13.5px;font-weight:600;margin:0 0 12px;color:var(--ink)}
 .shared ul{
   list-style:none;margin:0;padding:0;
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:9px 20px;
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 22px;
 }
+@media (max-width:560px){ .shared ul{grid-template-columns:repeat(2,minmax(0,1fr))} }
 .shared li{font-size:13px;color:var(--ink-2);display:flex;gap:8px;align-items:baseline}
 .shared li::before{
   content:"";width:5px;height:5px;flex:none;border-radius:50%;
-  background:var(--accent);transform:translateY(-2px);
+  background:var(--accent-c);transform:translateY(-2px);
 }
 
 .legal{margin-top:24px;padding-top:14px;border-top:1px solid var(--line-soft);
@@ -171,11 +180,11 @@ dialog::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
 .diff .k{color:var(--ink-2);font-size:12.5px}
 .diff .from{color:var(--ink-3);text-decoration:line-through;font-size:12.5px;font-variant-numeric:tabular-nums}
 .diff .to{font-weight:600;font-variant-numeric:tabular-nums}
-.diff .to.up{color:var(--accent)}
+.diff .to.up{color:var(--accent-c)}
 
 .note{
   font-size:12.5px;color:var(--ink-2);background:var(--fill);
-  border-inline-start:2px solid var(--accent);padding:10px 12px;
+  border-inline-start:2px solid var(--accent-c);padding:10px 12px;
   border-radius:0 8px 8px 0;margin-bottom:16px;line-height:1.6;
 }
 [dir="rtl"] .note{border-radius:8px 0 0 8px}
@@ -191,7 +200,7 @@ dialog::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
     background:var(--fill);color:var(--ink-2);border:1px solid var(--line);
     border-radius:999px;padding:6px 14px;cursor:pointer;
   }
-  .tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+  .tabs button[aria-selected="true"]{background:var(--accent-c);color:var(--accent-ink);border-color:transparent}
   .grid{grid-template-columns:1fr auto}
   .grid > *[data-col]:not([data-col="0"]){display:none}
   .grid > *[data-col="0"]{display:flex}
@@ -209,14 +218,6 @@ dialog::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
 <div class="wrap">
 
   <div class="bar" id="testbar">
-    <div class="seg" role="group" aria-label="Language">
-      <button type="button" data-lang="ar">عربي</button>
-      <button type="button" data-lang="en">EN</button>
-    </div>
-    <div class="seg" role="group" aria-label="Theme">
-      <button type="button" data-theme-btn="dark">Dark</button>
-      <button type="button" data-theme-btn="light">Light</button>
-    </div>
     <div class="sp"></div>
     <label for="mine" id="mineLbl"></label>
     <select class="pick" id="mine">
@@ -285,6 +286,7 @@ const T = {
     title:"المقارنة بين الحسابات",
     lede:"أربعة حسابات تختلف في أربع نقاط فقط. باقي الشروط واحدة عند الجميع.",
     rows:{deposit:"أقل إيداع", commission:"العمولة", spread:"السبريد", leverage:"الرافعة"},
+    page:"صفحة الحساب",
     perLot:"للّوت", noComm:"بدون عمولة", from:"من", points:"نقطة", raw:"+ سبريد خام",
     upTo:"حتى",
     open:"افتح حساب",
@@ -309,6 +311,7 @@ const T = {
     title:"Compare accounts",
     lede:"Four accounts that differ on four points only. Everything else is identical.",
     rows:{deposit:"Minimum deposit", commission:"Commission", spread:"Spread", leverage:"Leverage"},
+    page:"Account page",
     perLot:"per lot", noComm:"None", from:"from", points:"points", raw:"+ raw spread",
     upTo:"up to",
     open:"Open account",
@@ -335,8 +338,58 @@ const T = {
    STATE
    ======================================================================= */
 const q = new URLSearchParams(location.search);
-let lang  = q.get("lang") === "en" ? "en" : "ar";
-let theme = q.get("theme") || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+/* ---------------------------------------------------------------------------
+   B2CORE embed protocol (confirmed against the Max UP embed).
+
+   The portal does not broadcast to frames. It waits for the frame to announce
+   itself with {type:"embed-iframe-ready"}, then replies with the current theme
+   and language, and pushes an update whenever the client changes either.
+
+   Nothing else works: no URL parameters, no readable parent DOM
+   (my.maxifyfx.com is a separate origin either way), no prefers-color-scheme.
+   URL params are kept only as a manual override for testing.
+   --------------------------------------------------------------------------- */
+const B2CORE_ORIGIN = "https://my.maxifyfx.com";
+
+function paramTheme(){
+  const v = (q.get("theme") || "").toLowerCase();
+  return /light/.test(v) ? "light" : /dark/.test(v) ? "dark" : null;
+}
+function paramLang(){
+  const v = (q.get("lang") || "").toLowerCase().slice(0,2);
+  return v === "en" ? "en" : v === "ar" ? "ar" : null;
+}
+
+let theme = paramTheme() || "dark";
+let lang  = paramLang()  || "ar";
+
+addEventListener("message", e => {
+  if (e.origin !== B2CORE_ORIGIN || e.source !== window.parent || !e.data) return;
+  const d = e.data;
+
+  if (d.type === "embed-theme-change"){
+    /* the portal sends "light-theme" / "dark-theme" */
+    const next = d.theme === "light-theme" ? "light" : d.theme === "dark-theme" ? "dark" : null;
+    if (next && next !== theme){ theme = next; render(); }
+    return;
+  }
+
+  if (d.type === "embed-language-change"){
+    const next = d.lang === "ar" ? "ar" : "en";
+    if (next !== lang){ lang = next; render(); }
+  }
+});
+
+/* Announce the frame. Retry briefly in case the portal binds its own listener
+   a moment after the frame loads; it stops as soon as the portal answers. */
+let announced = false;
+addEventListener("message", e => { if (e.origin === B2CORE_ORIGIN) announced = true; });
+function announce(){
+  try{ window.parent.postMessage({ type:"embed-iframe-ready" }, B2CORE_ORIGIN); }catch(e){}
+}
+announce();
+[100, 400, 1200].forEach(ms => setTimeout(() => { if (!announced) announce(); }, ms));
+
 let mine  = (q.get("account") || "").toLowerCase();
 let active = 0;
 if (q.get("ui") === "clean") document.getElementById("testbar").hidden = true;
@@ -365,9 +418,17 @@ const BEST = {
   spread:    Math.min(...PLANS.map(p=>p.spreadFrom)),
   leverage:  Math.max(...PLANS.map(p=>p.leverage))
 };
-const isBest = (p,k) => ({
-  deposit:p.deposit, commission:p.commission, spread:p.spreadFrom, leverage:p.leverage
-}[k]) === BEST[k];
+const RAW = {
+  deposit:p=>p.deposit, commission:p=>p.commission, spread:p=>p.spreadFrom, leverage:p=>p.leverage
+};
+/* a value is marked only when it is the single best in its row.
+   ties (three accounts at 1:300, two at zero commission) get no marker,
+   because a marker on half the table stops meaning anything. */
+const UNIQUE = {};
+Object.keys(BEST).forEach(k=>{
+  UNIQUE[k] = PLANS.filter(p => RAW[k](p) === BEST[k]).length === 1;
+});
+const isBest = (p,k) => UNIQUE[k] && RAW[k](p) === BEST[k];
 
 /* =======================================================================
    RENDER
@@ -385,10 +446,6 @@ function render(){
   $("mineLbl").textContent = L.mineLbl;
   $("mine").value = mine;
 
-  document.querySelectorAll("[data-lang]").forEach(b =>
-    b.setAttribute("aria-pressed", b.dataset.lang === lang));
-  document.querySelectorAll("[data-theme-btn]").forEach(b =>
-    b.setAttribute("aria-pressed", b.dataset.themeBtn === theme));
 
   /* tabs (narrow only) */
   $("tabs").innerHTML = PLANS.map((p,i)=>
@@ -413,11 +470,12 @@ function render(){
   g.push(`<div class="actions lbl" data-col="0"></div>`);
   PLANS.forEach((p,i)=>{
     g.push(`<div class="actions ${i===active?"on":""}" data-col="${i+1}">
-      <button class="go" data-open="${p.id}">${L.details}</button></div>`);
+      <button class="go ghost" data-open="${p.id}">${L.details}</button></div>`);
   });
   $("grid").innerHTML = g.join("");
 
   $("sharedList").innerHTML = L.shared.map(s=>`<li>${s}</li>`).join("");
+
   syncCols();
 }
 
@@ -458,8 +516,8 @@ function openPlan(id){
     : L.noteCost;
 
   $("dlgGo").textContent = L.open + " " + p.name;
-  $("dlgGo").href = p.url;
-  $("dlgMore").textContent = L.details;
+  $("dlgGo").href = `https://my.maxifyfx.com/${lang}/platforms/mt5`;
+  $("dlgMore").textContent = L.page;
   $("dlgMore").href = p.more;
   $("dlg").showModal();
 }
@@ -474,16 +532,12 @@ document.addEventListener("click", e=>{
   const tab = e.target.closest("[data-tab]");
   if (tab){ active = +tab.dataset.tab; syncCols(); return; }
 
-  const lb = e.target.closest("[data-lang]");
-  if (lb){ lang = lb.dataset.lang; render(); return; }
-
-  const tb = e.target.closest("[data-theme-btn]");
-  if (tb){ theme = tb.dataset.themeBtn; render(); return; }
 });
 $("mine").addEventListener("change", e=>{ mine = e.target.value; render(); });
 $("dlgClose").addEventListener("click", ()=> $("dlg").close());
 $("dlg").addEventListener("click", e=>{ if (e.target === $("dlg")) $("dlg").close(); });
 
+console.log("compare-accounts build 11 | theme:", theme, "| lang:", lang);
 render();
 </script>
 </body>
