@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<!-- build 8 -->
-<html lang="ar" dir="rtl" data-theme="dark" data-build="8">
+<!-- build 10 -->
+<html lang="ar" dir="rtl" data-theme="dark" data-build="10">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -60,13 +60,6 @@ body{
 
 /* The embed cannot read the portal's theme, so it must not depend on it.
    It carries its own opaque surface and stays legible on a light or dark backdrop. */
-.langlink{
-  position:absolute;inset-block-start:10px;inset-inline-end:14px;z-index:2;
-  font:inherit;font-size:12px;font-weight:500;color:var(--ink-3);
-  background:none;border:0;padding:4px 6px;cursor:pointer;border-radius:6px;
-}
-.langlink:hover{color:var(--ink)}
-.langlink[hidden]{display:none}
 .wrap{
   position:relative;
   max-width:960px;margin:0 auto;padding:22px 22px 26px;
@@ -223,8 +216,6 @@ dialog::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
 </head>
 <body>
 <div class="wrap">
-
-  <button class="langlink" id="langlink" hidden></button>
 
   <div class="bar" id="testbar">
     <div class="sp"></div>
@@ -488,9 +479,6 @@ function render(){
 
   $("sharedList").innerHTML = L.shared.map(s=>`<li>${s}</li>`).join("");
 
-  const ll = $("langlink");
-  ll.hidden = q.get("switcher") !== "1";
-  ll.textContent = lang === "ar" ? "English" : "عربي";
   syncCols();
 }
 
@@ -544,8 +532,6 @@ document.addEventListener("click", e=>{
   const o = e.target.closest("[data-open]");
   if (o) return openPlan(o.dataset.open);
 
-  if (e.target.closest("#langlink")){ lang = lang === "ar" ? "en" : "ar"; render(); return; }
-
   const tab = e.target.closest("[data-tab]");
   if (tab){ active = +tab.dataset.tab; syncCols(); return; }
 
@@ -568,23 +554,42 @@ $("dlg").addEventListener("click", e=>{ if (e.target === $("dlg")) $("dlg").clos
 const PM_TYPE = "application/x-postmate-v1+json";
 const TRUSTED = /^https:\/\/([a-z0-9-]+\.)*(maxifyfx\.com|b2broker\.com)$/;
 
-function applyContext(o){
-  if (!o || typeof o !== "object") return false;
+/* Don't guess key names. Walk the whole payload and judge by VALUE:
+   any string that looks like a theme wins, any string that looks like a
+   locale wins. An earlier version bailed out after the first key it found,
+   so a present-but-unrecognised key silently blocked the rest. */
+function applyContext(o, depth){
+  depth = depth || 0;
+  if (!o || typeof o !== "object" || depth > 4) return false;
   let changed = false;
-  /* accept theme under any plausible key, and values like "light-theme" */
-  for (const k of ["theme","mode","colorScheme","color_scheme","skin","appearance"]){
-    const v = String(o[k] ?? "").toLowerCase();
-    if (!v) continue;
-    const next = /light|day|white/.test(v) ? "light" : /dark|night|black/.test(v) ? "dark" : null;
-    if (next && next !== theme){ theme = next; changed = true; }
-    break;
-  }
-  for (const k of ["lang","locale","language"]){
-    const v = String(o[k] ?? "").toLowerCase().slice(0,2);
-    if (!v) continue;
-    const next = v === "en" ? "en" : "ar";
-    if (next !== lang){ lang = next; changed = true; }
-    break;
+
+  for (const [k, v] of Object.entries(o)){
+    if (v && typeof v === "object"){
+      if (applyContext(v, depth + 1)) changed = true;
+      continue;
+    }
+    if (typeof v !== "string" && typeof v !== "boolean") continue;
+    const key = k.toLowerCase();
+    const val = String(v).toLowerCase();
+
+    /* theme: "dark", "light-theme", "isDark": true, "darkMode": false ... */
+    if (/theme|mode|scheme|skin|appearance|dark|light/.test(key) || /^(dark|light)(-theme)?$/.test(val)){
+      let next = null;
+      if (val === "true"  && /dark/.test(key))  next = "dark";
+      else if (val === "false" && /dark/.test(key)) next = "light";
+      else if (val === "true"  && /light/.test(key)) next = "light";
+      else if (/dark|night|black/.test(val))  next = "dark";
+      else if (/light|day|white/.test(val))   next = "light";
+      if (next && next !== theme){ theme = next; changed = true; }
+    }
+
+    /* locale: "ar", "en-US", "ar_IQ" ... */
+    if (/lang|locale/.test(key) || /^(ar|en)([-_][a-z]{2})?$/.test(val)){
+      const two = val.slice(0,2);
+      if (two === "ar" || two === "en"){
+        if (two !== lang){ lang = two; changed = true; }
+      }
+    }
   }
   return changed;
 }
@@ -621,7 +626,7 @@ addEventListener("message", e => {
   if (applyContext(d)) render();
 });
 
-console.log("compare-accounts build 8 | theme:", theme, "| lang:", lang);
+console.log("compare-accounts build 10 | theme:", theme, "| lang:", lang);
 render();
 </script>
 </body>

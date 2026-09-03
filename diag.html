@@ -16,6 +16,9 @@
 <body>
 <div class="box">
   <h1>What the portal is passing to this iframe</h1>
+  <p style="font-size:12px;opacity:.7;margin:0 0 10px">
+    Toggle the portal theme and the language while this page is open. Every message is logged below.
+  </p>
   <pre id="out">reading…</pre>
   <div class="msg">postMessage received from parent:<pre id="pm">(none yet)</pre></div>
 </div>
@@ -38,7 +41,7 @@ document.getElementById("out").textContent = JSON.stringify(info, null, 2);
    and log every frame of the exchange so we can see the real message shape. */
 const seen = [];
 addEventListener("message", e => {
-  seen.push({ origin: e.origin, data: e.data });
+  seen.push({ at: new Date().toISOString().slice(11,19), origin: e.origin, data: e.data });
   if (e.data && e.data.postmate === "handshake"){
     try{
       e.source.postMessage({ postmate:"handshake-reply", type:"application/x-postmate-v1+json" }, e.origin);
