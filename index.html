@@ -1,6 +1,6 @@
-<!-- build 12 -->
+<!-- build 13 -->
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" data-theme="dark" data-build="12">
+<html lang="ar" dir="rtl" data-theme="dark" data-build="13">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -27,6 +27,7 @@
   --glow:0 0 0 1px #1AE7EF66, 0 6px 26px -6px #1AE7EF3D;
   --scrim:#0A1018D9;
   --sheet:#1B2534;
+  --page:#171F2B;
 }
 [data-theme="light"]{
   color-scheme: light;
@@ -43,17 +44,21 @@
   --glow:0 0 0 1px #0A909866, 0 6px 22px -8px #0A909840;
   --scrim:#16202E4D;
   --sheet:#FFFFFF;
+  --page:#F5F7FA;
 }
 
 *{box-sizing:border-box}
-html,body{background:transparent;margin:0;padding:0}
+/* The portal gives the frame container a darker fill than its own page.
+   Painting the portal background here makes the embed sit flush with it. */
+html{background:var(--page)}
+body{background:var(--page);margin:0;padding:0;min-height:100vh}
 body{
   font-family:"IBM Plex Sans Arabic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   color:var(--ink);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;
 }
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:12px}
 
-.wrap{width:100%;max-width:1200px;margin:0 auto;padding:4px 4px 20px}
+.wrap{width:100%;max-width:1200px;margin:0 auto;padding:18px 16px 22px}
 
 h1{font-size:clamp(20px,2.6vw,26px);font-weight:600;letter-spacing:-.015em;margin:0 0 4px}
 .lede{margin:0 0 20px;color:var(--ink-2);font-size:14px;max-width:62ch}
@@ -135,6 +140,10 @@ dialog::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
 .diff .from{color:var(--ink-3);text-decoration:line-through;font-size:12.5px;font-variant-numeric:tabular-nums}
 .diff .to{font-weight:600;font-variant-numeric:tabular-nums}
 .diff .to.lead{color:var(--accent)}
+.fullH{margin:18px 0 2px;font-size:12px;font-weight:600;color:var(--ink-3)}
+.diff.full .row{grid-template-columns:1fr auto;font-size:13px}
+.diff.full .to{font-weight:500}
+.sheet{max-height:82vh;overflow:auto}
 
 .note{font-size:12.5px;color:var(--ink-2);background:var(--accent-soft);
   border-inline-start:2px solid var(--accent);padding:10px 12px;
@@ -181,9 +190,11 @@ dialog::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
     <h3 id="dlgTitle"></h3>
     <p class="who" id="dlgWho"></p>
     <div class="diff" id="dlgDiff"></div>
+    <h4 class="fullH" id="dlgFullH"></h4>
+    <div class="diff full" id="dlgFull"></div>
     <div class="note" id="dlgNote"></div>
     <div class="cta">
-      <a class="go" id="dlgGo" target="_blank" rel="noopener"></a>
+      <a class="go" id="dlgGo" target="_top"></a>
       <a class="go ghost" id="dlgMore" target="_blank" rel="noopener"></a>
     </div>
   </div>
@@ -219,6 +230,9 @@ const T = {
       fy:"وسط بين السبريد الضيق والعمولة المنخفضة.",
       ea:"مخصص للتداول الآلي والاكسبيرتات."
     },
+    fullH:"باقي المواصفات",
+    full:[["أصغر لوت","0.01"],["نوع التنفيذ","ECN Direct Market"],["عمولة السواب","بدون"],
+          ["التداول الآلي","مدعوم"],["VPS","مدعوم"],["المنصة","ميتاتريدر 5"],["إدارة المخاطر","حرية كاملة"]],
     noteNoMine:"اختر حسابك الحالي من الأعلى لتشوف الفرق مباشرة.",
     noteSame:"هذا هو حسابك الحالي.",
     noteCost:"السبريد الخام يتغير حسب السيولة ووقت الجلسة، فالتكلفة النهائية تعتمد على حجم تداولك وليس على رقم ثابت.",
@@ -238,6 +252,9 @@ const T = {
       fy:"A middle ground between tight spread and low commission.",
       ea:"Built for automated trading and expert advisors."
     },
+    fullH:"Everything else",
+    full:[["Minimum lot","0.01"],["Execution","ECN Direct Market"],["Swap commission","None"],
+          ["Automated trading","Supported"],["VPS","Supported"],["Platform","MetaTrader 5"],["Risk management","Full freedom"]],
     noteNoMine:"Pick your current account above to see the difference.",
     noteSame:"This is your current account.",
     noteCost:"Raw spread moves with liquidity and session, so the final cost depends on your volume rather than one fixed number.",
@@ -360,6 +377,10 @@ function openPlan(id){
            `<span class="to ${isLead(p,k)?"lead":""}">${toTxt}</span></div>`;
   }).join("");
 
+  $("dlgFullH").textContent = L.fullH;
+  $("dlgFull").innerHTML = L.full.map(([k,v]) =>
+    `<div class="row"><span class="k">${k}</span><span class="to">${v}</span></div>`).join("");
+
   $("dlgNote").textContent = !cur ? L.noteNoMine : cur.id === p.id ? L.noteSame : L.noteCost;
   $("dlgGo").textContent   = L.open + " " + p.name;
   $("dlgGo").href          = "https://my.maxifyfx.com/" + lang + "/platforms/mt5";
@@ -376,7 +397,7 @@ $("mine").addEventListener("change", e => { mine = e.target.value; render(); });
 $("dlgClose").addEventListener("click", () => $("dlg").close());
 $("dlg").addEventListener("click", e => { if (e.target === $("dlg")) $("dlg").close(); });
 
-console.log("compare-accounts build 12 | theme:", theme, "| lang:", lang);
+console.log("compare-accounts build 13 | theme:", theme, "| lang:", lang);
 render();
 </script>
 </body>
