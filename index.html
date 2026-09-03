@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" data-theme="dark">
+<!-- build 8 -->
+<html lang="ar" dir="rtl" data-theme="dark" data-build="8">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -602,8 +603,17 @@ addEventListener("message", e => {
 
   /* 2. later updates: the portal emits on theme or language change */
   if (d.postmate === "emit"){
-    const v = d.value;
-    if (applyContext(v && v.data ? v.data : v)) render();
+    /* emit payloads are nested differently across Postmate versions
+       (value, value.data, model, data). Walk shallowly and take the first hit. */
+    const seen = new Set();
+    const stack = [d.value, d.model, d.data, d];
+    while (stack.length){
+      const o = stack.shift();
+      if (!o || typeof o !== "object" || seen.has(o)) continue;
+      seen.add(o);
+      if (applyContext(o)){ render(); return; }
+      if (seen.size < 12) for (const val of Object.values(o)) stack.push(val);
+    }
     return;
   }
 
@@ -611,6 +621,7 @@ addEventListener("message", e => {
   if (applyContext(d)) render();
 });
 
+console.log("compare-accounts build 8 | theme:", theme, "| lang:", lang);
 render();
 </script>
 </body>
