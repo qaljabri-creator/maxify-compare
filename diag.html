@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>iframe diagnostics</title>
+<style>
+  html,body{background:transparent;margin:0;font:13px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace}
+  .box{padding:16px;color:#111}
+  @media (prefers-color-scheme:dark){ .box{color:#eee} }
+  h1{font-size:14px;margin:0 0 10px;font-weight:700}
+  pre{white-space:pre-wrap;word-break:break-all;margin:0}
+  .msg{margin-top:14px;border-top:1px solid currentColor;padding-top:10px;opacity:.85}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>What the portal is passing to this iframe</h1>
+  <pre id="out">reading…</pre>
+  <div class="msg">postMessage received from parent:<pre id="pm">(none yet)</pre></div>
+</div>
+<script>
+const info = {
+  href: location.href,
+  search: location.search,
+  hash: location.hash,
+  params: Object.fromEntries(new URLSearchParams(location.search)),
+  referrer: document.referrer,
+  inIframe: window.self !== window.top,
+  prefersDark: matchMedia("(prefers-color-scheme: dark)").matches,
+  viewport: innerWidth + " x " + innerHeight,
+  lang: navigator.language,
+  storageOK: (()=>{ try{ localStorage.setItem("_t","1"); localStorage.removeItem("_t"); return true; }catch(e){ return false; } })()
+};
+document.getElementById("out").textContent = JSON.stringify(info, null, 2);
+
+const seen = [];
+addEventListener("message", e => {
+  seen.push({ origin: e.origin, data: e.data });
+  document.getElementById("pm").textContent = JSON.stringify(seen, null, 2);
+});
+</script>
+</body>
+</html>

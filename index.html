@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compare accounts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ---------- tokens ---------- */
+:root{
+  color-scheme: light;
+  --ink:#0B1116;
+  --ink-2:rgba(11,17,22,.60);
+  --ink-3:rgba(11,17,22,.40);
+  --line:rgba(11,17,22,.15);
+  --line-soft:rgba(11,17,22,.07);
+  --fill:rgba(11,17,22,.035);
+  --fill-2:rgba(11,17,22,.06);
+  --accent:#0A9DA2;
+  --accent-soft:rgba(10,157,162,.12);
+  --accent-ink:#FFFFFF;
+  --scrim:rgba(11,17,22,.34);
+  --sheet:#FBFDFD;
+}
+[data-theme="dark"]{
+  color-scheme: dark;
+  --ink:#E9F3F4;
+  --ink-2:rgba(233,243,244,.62);
+  --ink-3:rgba(233,243,244,.40);
+  --line:rgba(233,243,244,.17);
+  --line-soft:rgba(233,243,244,.08);
+  --fill:rgba(233,243,244,.045);
+  --fill-2:rgba(233,243,244,.08);
+  --accent:#19FFFD;
+  --accent-soft:rgba(25,255,253,.13);
+  --accent-ink:#04191B;
+  --scrim:rgba(2,8,10,.60);
+  --sheet:#0E1519;
+}
+
+*{box-sizing:border-box}
+html,body{background:transparent;margin:0;padding:0}
+body{
+  font-family:"IBM Plex Sans Arabic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--ink);
+  font-size:15px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.wrap{max-width:920px;margin:0 auto;padding:18px 16px 26px}
+
+/* ---------- test bar ---------- */
+.bar{
+  display:flex;gap:8px;flex-wrap:wrap;align-items:center;
+  padding-bottom:14px;margin-bottom:16px;border-bottom:1px solid var(--line-soft);
+}
+.bar[hidden]{display:none}
+.bar .sp{flex:1}
+.seg{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{
+  font:inherit;font-size:12.5px;font-weight:500;background:none;border:0;color:var(--ink-2);
+  padding:5px 12px;cursor:pointer;
+}
+.seg button[aria-pressed="true"]{background:var(--fill-2);color:var(--ink)}
+.pick{
+  font:inherit;font-size:12.5px;color:var(--ink);background:var(--fill);
+  border:1px solid var(--line);border-radius:999px;padding:5px 10px;cursor:pointer;
+}
+.bar label{font-size:12.5px;color:var(--ink-3)}
+
+/* ---------- head ---------- */
+h1{
+  font-size:clamp(21px,3.4vw,27px);font-weight:600;letter-spacing:-.015em;
+  margin:0 0 4px;
+}
+.lede{margin:0 0 22px;color:var(--ink-2);font-size:14px;max-width:56ch}
+
+/* ---------- matrix ---------- */
+.matrix{border-top:1px solid var(--line)}
+.grid{
+  display:grid;
+  grid-template-columns:minmax(96px,1.15fr) repeat(4,minmax(0,1fr));
+  align-items:stretch;
+}
+
+.hcell{
+  padding:12px 8px 11px;border-bottom:1px solid var(--line);
+  display:flex;flex-direction:column;gap:6px;align-items:flex-start;
+}
+.hcell.lbl{border-bottom:1px solid var(--line)}
+.plan-btn{
+  font:inherit;font-weight:600;font-size:14.5px;color:var(--ink);
+  background:none;border:0;padding:0;cursor:pointer;text-align:start;
+  border-bottom:2px solid transparent;
+}
+.plan-btn:hover{border-bottom-color:var(--accent)}
+.mine{
+  font-size:10.5px;font-weight:500;color:var(--accent-ink);background:var(--accent);
+  border-radius:999px;padding:1px 7px;letter-spacing:.01em;
+}
+
+.rlabel{
+  padding:13px 8px;font-size:12.5px;color:var(--ink-2);
+  border-bottom:1px solid var(--line-soft);display:flex;align-items:center;
+}
+.cell{
+  padding:13px 8px;font-size:14px;font-weight:500;
+  border-bottom:1px solid var(--line-soft);
+  border-inline-start:1px solid var(--line-soft);
+  display:flex;align-items:center;
+  font-variant-numeric:tabular-nums;
+}
+.cell.best{background:var(--accent-soft)}
+.cell .u{color:var(--ink-3);font-weight:400;font-size:12.5px;margin-inline-start:3px}
+
+.actions{padding:14px 8px 0;border-inline-start:1px solid var(--line-soft)}
+.actions.lbl{border:0}
+
+.go{
+  display:inline-flex;font:inherit;font-size:13px;font-weight:600;
+  background:var(--accent);color:var(--accent-ink);border:0;border-radius:8px;
+  padding:8px 13px;cursor:pointer;text-decoration:none;width:100%;justify-content:center;
+}
+.go.ghost{background:none;color:var(--ink);border:1px solid var(--line)}
+
+/* ---------- shared strip ---------- */
+.shared{margin-top:26px;padding-top:18px;border-top:1px solid var(--line)}
+.shared h2{font-size:13.5px;font-weight:600;margin:0 0 12px;color:var(--ink)}
+.shared ul{
+  list-style:none;margin:0;padding:0;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:9px 20px;
+}
+.shared li{font-size:13px;color:var(--ink-2);display:flex;gap:8px;align-items:baseline}
+.shared li::before{
+  content:"";width:5px;height:5px;flex:none;border-radius:50%;
+  background:var(--accent);transform:translateY(-2px);
+}
+
+.legal{margin-top:24px;padding-top:14px;border-top:1px solid var(--line-soft);
+  font-size:11.5px;color:var(--ink-3);line-height:1.65}
+
+/* ---------- modal ---------- */
+dialog{
+  border:0;padding:0;background:transparent;color:var(--ink);
+  max-width:520px;width:calc(100% - 28px);
+}
+dialog::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
+.sheet{
+  background:var(--sheet);border:1px solid var(--line);border-radius:14px;
+  padding:22px 22px 20px;
+}
+.sheet h3{margin:0;font-size:19px;font-weight:600;letter-spacing:-.01em}
+.sheet .who{margin:3px 0 16px;color:var(--ink-2);font-size:13.5px}
+.close{
+  position:absolute;inset-block-start:14px;inset-inline-end:14px;
+  font:inherit;font-size:18px;line-height:1;background:none;border:0;
+  color:var(--ink-3);cursor:pointer;padding:4px 8px;border-radius:8px;
+}
+.close:hover{color:var(--ink);background:var(--fill-2)}
+.sheet{position:relative}
+
+.diff{border-top:1px solid var(--line-soft);margin-bottom:16px}
+.diff .row{
+  display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:baseline;
+  padding:9px 0;border-bottom:1px solid var(--line-soft);font-size:13.5px;
+}
+.diff .k{color:var(--ink-2);font-size:12.5px}
+.diff .from{color:var(--ink-3);text-decoration:line-through;font-size:12.5px;font-variant-numeric:tabular-nums}
+.diff .to{font-weight:600;font-variant-numeric:tabular-nums}
+.diff .to.up{color:var(--accent)}
+
+.note{
+  font-size:12.5px;color:var(--ink-2);background:var(--fill);
+  border-inline-start:2px solid var(--accent);padding:10px 12px;
+  border-radius:0 8px 8px 0;margin-bottom:16px;line-height:1.6;
+}
+[dir="rtl"] .note{border-radius:8px 0 0 8px}
+.sheet .cta{display:flex;gap:9px;flex-wrap:wrap}
+.sheet .cta .go{width:auto;flex:1;min-width:130px}
+
+/* ---------- mobile / narrow iframe ---------- */
+@media (max-width:620px){
+  .wrap{padding:14px 12px 22px}
+  .tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:12px;margin-bottom:2px}
+  .tabs button{
+    font:inherit;font-size:13px;font-weight:600;white-space:nowrap;
+    background:var(--fill);color:var(--ink-2);border:1px solid var(--line);
+    border-radius:999px;padding:6px 14px;cursor:pointer;
+  }
+  .tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+  .grid{grid-template-columns:1fr auto}
+  .grid > *[data-col]:not([data-col="0"]){display:none}
+  .grid > *[data-col="0"]{display:flex}
+  .grid > *[data-col].on{display:flex}
+  .cell,.actions{border-inline-start:0}
+  .cell{justify-content:flex-end}
+  .hcell{align-items:flex-end}
+}
+@media (min-width:621px){ .tabs{display:none} }
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="bar" id="testbar">
+    <div class="seg" role="group" aria-label="Language">
+      <button type="button" data-lang="ar">عربي</button>
+      <button type="button" data-lang="en">EN</button>
+    </div>
+    <div class="seg" role="group" aria-label="Theme">
+      <button type="button" data-theme-btn="dark">Dark</button>
+      <button type="button" data-theme-btn="light">Light</button>
+    </div>
+    <div class="sp"></div>
+    <label for="mine" id="mineLbl"></label>
+    <select class="pick" id="mine">
+      <option value="">—</option>
+      <option value="standard">Standard</option>
+      <option value="zero">Zero</option>
+      <option value="fy">FY</option>
+      <option value="ea">EA</option>
+    </select>
+  </div>
+
+  <h1 id="title"></h1>
+  <p class="lede" id="lede"></p>
+
+  <div class="tabs" id="tabs" role="tablist"></div>
+
+  <div class="matrix"><div class="grid" id="grid"></div></div>
+
+  <section class="shared">
+    <h2 id="sharedH"></h2>
+    <ul id="sharedList"></ul>
+  </section>
+
+  <p class="legal" id="legal"></p>
+</div>
+
+<dialog id="dlg" aria-labelledby="dlgTitle">
+  <div class="sheet">
+    <button class="close" id="dlgClose" aria-label="Close">&times;</button>
+    <h3 id="dlgTitle"></h3>
+    <p class="who" id="dlgWho"></p>
+    <div class="diff" id="dlgDiff"></div>
+    <div class="note" id="dlgNote"></div>
+    <div class="cta">
+      <a class="go" id="dlgGo" target="_blank" rel="noopener"></a>
+      <a class="go ghost" id="dlgMore" target="_blank" rel="noopener"></a>
+    </div>
+  </div>
+</dialog>
+
+<script>
+/* =======================================================================
+   DATA  — single source of truth. Values taken from maxifyfx.com/compare-plans
+   ======================================================================= */
+const PLANS = [
+  { id:"standard", name:"Standard",
+    deposit:15,   commission:0, spreadFrom:0.6, leverage:300,
+    url:"https://my.maxifyfx.com/en/register",
+    more:"https://www.maxifyfx.com/standard-account" },
+  { id:"zero", name:"Zero",
+    deposit:4500, commission:7, spreadFrom:0.1, leverage:300, raw:true,
+    url:"https://my.maxifyfx.com/en/register",
+    more:"https://www.maxifyfx.com/zero-account" },
+  { id:"fy", name:"FY",
+    deposit:1000, commission:4, spreadFrom:0.3, leverage:300,
+    url:"https://my.maxifyfx.com/en/register",
+    more:"https://www.maxifyfx.com/fy-account" },
+  { id:"ea", name:"EA",
+    deposit:500,  commission:0, spreadFrom:2.0, leverage:100, points:true,
+    url:"https://my.maxifyfx.com/en/register",
+    more:"https://www.maxifyfx.com/ea-account" }
+];
+
+const T = {
+  ar:{
+    title:"المقارنة بين الحسابات",
+    lede:"أربعة حسابات تختلف في أربع نقاط فقط. باقي الشروط واحدة عند الجميع.",
+    rows:{deposit:"أقل إيداع", commission:"العمولة", spread:"السبريد", leverage:"الرافعة"},
+    perLot:"للّوت", noComm:"بدون عمولة", from:"من", points:"نقطة", raw:"+ سبريد خام",
+    upTo:"حتى",
+    open:"افتح حساب",
+    details:"تفاصيل الحساب",
+    mineLbl:"حسابي الحالي",
+    mine:"حسابك",
+    sharedH:"متوفر في كل الحسابات",
+    shared:["أصغر لوت 0.01","تنفيذ ECN Direct Market","بدون عمولة سواب","التداول الآلي مدعوم","VPS مدعوم","ميتاتريدر 5","حرية كاملة في إدارة المخاطر"],
+    who:{
+      standard:"بداية بأقل تكلفة دخول، بدون عمولة على الصفقة.",
+      zero:"سبريد خام للمضاربة السريعة، مقابل عمولة ثابتة.",
+      fy:"وسط بين السبريد الضيق والعمولة المنخفضة.",
+      ea:"مخصص للتداول الآلي والاكسبيرتات."
+    },
+    vsHead:"مقارنة بحسابك الحالي",
+    noteNoMine:"اختر حسابك الحالي من الأعلى لتشوف الفرق مباشرة.",
+    noteSame:"هذا هو حسابك الحالي.",
+    noteCost:"السبريد الخام يتغير حسب السيولة ووقت الجلسة، فالتكلفة النهائية تعتمد على حجم تداولك وليس على رقم ثابت.",
+    legal:"تداول العقود مقابل الفروقات ينطوي على مخاطر عالية وقد يؤدي إلى خسارة رأس المال. الشروط قابلة للتغيير حسب نوع الأداة وظروف السوق."
+  },
+  en:{
+    title:"Compare accounts",
+    lede:"Four accounts that differ on four points only. Everything else is identical.",
+    rows:{deposit:"Minimum deposit", commission:"Commission", spread:"Spread", leverage:"Leverage"},
+    perLot:"per lot", noComm:"None", from:"from", points:"points", raw:"+ raw spread",
+    upTo:"up to",
+    open:"Open account",
+    details:"Account details",
+    mineLbl:"My current account",
+    mine:"Yours",
+    sharedH:"Included with every account",
+    shared:["0.01 minimum lot","ECN Direct Market execution","No swap commission","Automated trading supported","VPS supported","MetaTrader 5","Full risk-management freedom"],
+    who:{
+      standard:"Lowest entry cost, no per-trade commission.",
+      zero:"Raw spreads for fast scalping, with a fixed commission.",
+      fy:"A middle ground between tight spread and low commission.",
+      ea:"Built for automated trading and expert advisors."
+    },
+    vsHead:"Against your current account",
+    noteNoMine:"Pick your current account above to see the difference.",
+    noteSame:"This is your current account.",
+    noteCost:"Raw spread moves with liquidity and session, so the final cost depends on your volume rather than one fixed number.",
+    legal:"CFD trading carries a high level of risk and can result in the loss of your capital. Conditions vary by instrument and market conditions."
+  }
+};
+
+/* =======================================================================
+   STATE
+   ======================================================================= */
+const q = new URLSearchParams(location.search);
+let lang  = q.get("lang") === "en" ? "en" : "ar";
+let theme = q.get("theme") || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+let mine  = (q.get("account") || "").toLowerCase();
+let active = 0;
+if (q.get("ui") === "clean") document.getElementById("testbar").hidden = true;
+
+const $ = id => document.getElementById(id);
+const t = () => T[lang];
+const plan = id => PLANS.find(p => p.id === id);
+
+/* ---------- value formatting ---------- */
+const money = n => "$" + n.toLocaleString("en-US");
+function fmt(p, key){
+  const L = t();
+  if (key === "deposit")  return {v: money(p.deposit)};
+  if (key === "commission") return p.commission
+      ? {v: money(p.commission), u: L.perLot}
+      : {v: L.noComm};
+  if (key === "spread")   return p.points
+      ? {v: p.spreadFrom, u: L.points}
+      : {v: L.from + " " + p.spreadFrom, u: p.raw ? L.raw : ""};
+  if (key === "leverage") return {v: "1:" + p.leverage, u: ""};
+}
+/* lower is better for deposit/commission/spread; higher for leverage */
+const BEST = {
+  deposit:   Math.min(...PLANS.map(p=>p.deposit)),
+  commission:Math.min(...PLANS.map(p=>p.commission)),
+  spread:    Math.min(...PLANS.map(p=>p.spreadFrom)),
+  leverage:  Math.max(...PLANS.map(p=>p.leverage))
+};
+const isBest = (p,k) => ({
+  deposit:p.deposit, commission:p.commission, spread:p.spreadFrom, leverage:p.leverage
+}[k]) === BEST[k];
+
+/* =======================================================================
+   RENDER
+   ======================================================================= */
+function render(){
+  const L = t();
+  document.documentElement.lang = lang;
+  document.documentElement.dir  = lang === "ar" ? "rtl" : "ltr";
+  document.documentElement.dataset.theme = theme;
+
+  $("title").textContent = L.title;
+  $("lede").textContent  = L.lede;
+  $("sharedH").textContent = L.sharedH;
+  $("legal").textContent = L.legal;
+  $("mineLbl").textContent = L.mineLbl;
+  $("mine").value = mine;
+
+  document.querySelectorAll("[data-lang]").forEach(b =>
+    b.setAttribute("aria-pressed", b.dataset.lang === lang));
+  document.querySelectorAll("[data-theme-btn]").forEach(b =>
+    b.setAttribute("aria-pressed", b.dataset.themeBtn === theme));
+
+  /* tabs (narrow only) */
+  $("tabs").innerHTML = PLANS.map((p,i)=>
+    `<button role="tab" aria-selected="${i===active}" data-tab="${i}">${p.name}</button>`).join("");
+
+  /* grid */
+  const g = [];
+  g.push(`<div class="hcell lbl" data-col="0"></div>`);
+  PLANS.forEach((p,i)=>{
+    const tag = mine === p.id ? `<span class="mine">${L.mine}</span>` : "";
+    g.push(`<div class="hcell ${i+1===active+1?"on":""}" data-col="${i+1}">
+      <button class="plan-btn" data-open="${p.id}">${p.name}</button>${tag}</div>`);
+  });
+  ["deposit","commission","spread","leverage"].forEach(k=>{
+    g.push(`<div class="rlabel" data-col="0">${L.rows[k]}</div>`);
+    PLANS.forEach((p,i)=>{
+      const f = fmt(p,k);
+      g.push(`<div class="cell ${isBest(p,k)?"best":""} ${i===active?"on":""}" data-col="${i+1}">
+        ${f.v}${f.u?`<span class="u">${f.u}</span>`:""}</div>`);
+    });
+  });
+  g.push(`<div class="actions lbl" data-col="0"></div>`);
+  PLANS.forEach((p,i)=>{
+    g.push(`<div class="actions ${i===active?"on":""}" data-col="${i+1}">
+      <button class="go" data-open="${p.id}">${L.details}</button></div>`);
+  });
+  $("grid").innerHTML = g.join("");
+
+  $("sharedList").innerHTML = L.shared.map(s=>`<li>${s}</li>`).join("");
+  syncCols();
+}
+
+function syncCols(){
+  document.querySelectorAll("#grid [data-col]").forEach(el=>{
+    const c = +el.dataset.col;
+    el.classList.toggle("on", c === 0 || c === active + 1);
+  });
+  document.querySelectorAll("#tabs [data-tab]").forEach(b=>
+    b.setAttribute("aria-selected", +b.dataset.tab === active));
+}
+
+/* =======================================================================
+   MODAL
+   ======================================================================= */
+function openPlan(id){
+  const L = t(), p = plan(id), cur = mine ? plan(mine) : null;
+  $("dlgTitle").textContent = p.name;
+  $("dlgWho").textContent   = L.who[id];
+
+  const keys = ["deposit","commission","spread","leverage"];
+  $("dlgDiff").innerHTML = keys.map(k=>{
+    const to = fmt(p,k), toTxt = to.v + (to.u ? " " + to.u : "");
+    let inner = "";
+    if (cur && cur.id !== p.id){
+      const f = fmt(cur,k);
+      const same = (f.v + (f.u||"")) === (to.v + (to.u||""));
+      if (!same) inner = `${f.v}${f.u?" "+f.u:""}`;
+    }
+    const fromTxt = `<span class="from">${inner}</span>`;
+    return `<div class="row"><span class="k">${L.rows[k]}</span>${fromTxt}
+      <span class="to ${isBest(p,k)?"up":""}">${toTxt}</span></div>`;
+  }).join("");
+
+  $("dlgNote").textContent =
+      !cur ? L.noteNoMine
+    : cur.id === p.id ? L.noteSame
+    : L.noteCost;
+
+  $("dlgGo").textContent = L.open + " " + p.name;
+  $("dlgGo").href = p.url;
+  $("dlgMore").textContent = L.details;
+  $("dlgMore").href = p.more;
+  $("dlg").showModal();
+}
+
+/* =======================================================================
+   EVENTS
+   ======================================================================= */
+document.addEventListener("click", e=>{
+  const o = e.target.closest("[data-open]");
+  if (o) return openPlan(o.dataset.open);
+
+  const tab = e.target.closest("[data-tab]");
+  if (tab){ active = +tab.dataset.tab; syncCols(); return; }
+
+  const lb = e.target.closest("[data-lang]");
+  if (lb){ lang = lb.dataset.lang; render(); return; }
+
+  const tb = e.target.closest("[data-theme-btn]");
+  if (tb){ theme = tb.dataset.themeBtn; render(); return; }
+});
+$("mine").addEventListener("change", e=>{ mine = e.target.value; render(); });
+$("dlgClose").addEventListener("click", ()=> $("dlg").close());
+$("dlg").addEventListener("click", e=>{ if (e.target === $("dlg")) $("dlg").close(); });
+
+render();
+</script>
+</body>
+</html>
