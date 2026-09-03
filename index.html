@@ -54,11 +54,10 @@ body{
 
 .langlink{
   position:absolute;inset-block-start:10px;inset-inline-end:14px;z-index:2;
-  font:inherit;font-size:12px;font-weight:500;color:var(--ink-3);
-  background:none;border:0;padding:4px 6px;cursor:pointer;border-radius:6px;
+  font:inherit;font-size:12px;font-weight:500;color:var(--ink);
+  background:var(--fill-2);border:1px solid var(--line);padding:4px 8px;cursor:pointer;border-radius:6px;
 }
-.langlink:hover{color:var(--ink)}
-.langlink[hidden]{display:none}
+.langlink:hover{background:var(--accent-c);color:var(--accent-ink)}
 
 .wrap{
   position:relative;
@@ -210,7 +209,7 @@ dialog::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
 <body>
 <div class="wrap">
 
-  <button class="langlink" id="langlink" hidden></button>
+  <button class="langlink" id="langlink"></button>
 
   <div class="bar" id="testbar">
     <div class="sp"></div>
@@ -374,7 +373,7 @@ function render(){
   $("sharedList").innerHTML = L.shared.map(s=>`<li>${s}</li>`).join("");
 
   const ll = $("langlink");
-  ll.hidden = true; 
+  ll.textContent = lang === "ar" ? "English" : "عربي";
   syncCols();
 }
 
@@ -415,6 +414,13 @@ function openPlan(id){
 document.addEventListener("click", e=>{
   const o = e.target.closest("[data-open]");
   if (o) return openPlan(o.dataset.open);
+  
+  if (e.target.closest("#langlink")){ 
+    lang = lang === "ar" ? "en" : "ar"; 
+    render(); 
+    return; 
+  }
+
   const tab = e.target.closest("[data-tab]");
   if (tab){ active = +tab.dataset.tab; syncCols(); return; }
 });
@@ -422,47 +428,30 @@ $("mine").addEventListener("change", e=>{ mine = e.target.value; render(); });
 $("dlgClose").addEventListener("click", ()=> $("dlg").close());
 $("dlg").addEventListener("click", e=>{ if (e.target === $("dlg")) $("dlg").close(); });
 
-/* نظام المزامنة اللحظية (يقرأ الثيم واللغة من الصفحة الأم فور التغيير) */
-setInterval(() => {
-  try {
-    const pBody = window.parent.document.body;
-    const pHtml = window.parent.document.documentElement;
-
-    // كشف الثيم
-    let newTheme = "dark";
-    if (pBody.classList.contains("light-theme") || pHtml.getAttribute("data-theme") === "light" || pBody.classList.contains("light")) {
-      newTheme = "light";
-    } else if (pBody.classList.contains("dark-theme") || pHtml.getAttribute("data-theme") === "dark" || pBody.classList.contains("dark")) {
-      newTheme = "dark";
-    }
-
-    // كشف اللغة
-    let newLang = lang;
-    const pHlang = pHtml.lang || pHtml.getAttribute("dir") || pBody.getAttribute("dir");
-    if (pHlang) {
-      if (pHlang.toLowerCase().includes("ar") || pHlang.toLowerCase() === "rtl") newLang = "ar";
-      else if (pHlang.toLowerCase().includes("en") || pHlang.toLowerCase() === "ltr") newLang = "en";
-    }
-
-    if (newTheme !== theme || newLang !== lang) {
-      theme = newTheme;
-      lang = newLang;
-      render();
-    }
-  } catch (err) {
-    // تجاوز أخطاء الصليب الأمني (CORS) في حال اختلاف النطاقات الكلي
-  }
-}, 300);
-
-/* دعم Postmate وبرمجة الرسائل التقليدية */
+/* استقبال رسائل الـ PostMessage والـ Postmate بأمان تام */
 addEventListener("message", e => {
   const d = e.data;
   if (!d) return;
+
   if (d.postmate === "handshake" && e.source) {
     try { e.source.postMessage({ postmate:"handshake-reply", type:"application/x-postmate-v1+json" }, e.origin); } catch(err){}
   }
-  if (d.theme) { theme = d.theme; render(); }
-  if (d.lang) { lang = d.lang; render(); }
+
+  // التقاط تغييرات الثيم أو اللغة القادمة عبر الرسائل
+  let updated = false;
+  const tVal = d.theme || (d.model && d.model.theme);
+  if (tVal) {
+    theme = /light|white|day/.test(String(tVal).toLowerCase()) ? "light" : "dark";
+    updated = true;
+  }
+
+  const lVal = d.lang || d.locale || (d.model && (d.model.lang || d.model.locale));
+  if (lVal) {
+    lang = String(lVal).toLowerCase().startsWith("en") ? "en" : "ar";
+    updated = true;
+  }
+
+  if (updated) render();
 });
 
 render();
