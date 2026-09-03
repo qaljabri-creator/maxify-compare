@@ -1,6 +1,6 @@
+<!-- build 12 -->
 <!DOCTYPE html>
-<!-- build 11 -->
-<html lang="ar" dir="rtl" data-theme="dark" data-build="11">
+<html lang="ar" dir="rtl" data-theme="dark" data-build="12">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,215 +10,151 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ---------- tokens ----------
-   Values mirror B2CORE's own design tokens (read from the portal's <html> element).
-   Each var() also tries the parent name first, so if the embed is ever served
-   same-origin / injected, it inherits the portal palette automatically.
-   Cross-origin it simply falls back to the hard-coded value. Zero cost either way. */
+   Mirrors B2CORE's palette. The portal drives the theme over postMessage,
+   so the page stays transparent and simply repaints. */
 :root{
   color-scheme: dark;
-  --ink:      var(--text-main, #FFFFFF);
-  --ink-2:    var(--text-secondary, #7B8AA4);
-  --ink-3:    #7B8AA4A6;
-  --line:     var(--divider, #324462);
-  --line-soft:#32446299;
-  --fill:     rgba(255,255,255,.035);
-  --fill-2:   var(--field, #2B3B54);
-  --accent-c: var(--accent, #1AE7EF);
-  --accent-soft: var(--accent-10, #00BBCC1A);
-  --accent-ink:  #06131A;
-  --scrim:    #0A1018CC;
-  --sheet:    var(--card, #1F2A3C);
-  --panel:    var(--background, #171F2B);
+  --ink:#FFFFFF;
+  --ink-2:#7B8AA4;
+  --ink-3:#7B8AA4A6;
+  --line:#324462;
+  --line-soft:#32446288;
+  --card:#1F2A3C66;
+  --card-hover:#1F2A3CCC;
+  --accent:#1AE7EF;
+  --accent-soft:#1AE7EF1F;
+  --accent-ink:#06131A;
+  --glow:0 0 0 1px #1AE7EF66, 0 6px 26px -6px #1AE7EF3D;
+  --scrim:#0A1018D9;
+  --sheet:#1B2534;
 }
 [data-theme="light"]{
   color-scheme: light;
-  --ink:      #16202E;
-  --ink-2:    #5A6B85;
-  --ink-3:    #8494AB;
-  --line:     #DCE3EC;
+  --ink:#16202E;
+  --ink-2:#5A6B85;
+  --ink-3:#8494AB;
+  --line:#DCE3EC;
   --line-soft:#E7EDF3;
-  --fill:     rgba(22,32,46,.03);
-  --fill-2:   #EDF1F6;
-  --accent-c: #0A8F97;
-  --accent-soft: rgba(10,143,151,.10);
-  --accent-ink:  #FFFFFF;
-  --scrim:    rgba(22,32,46,.34);
-  --sheet:    #FFFFFF;
-  --panel:    #FFFFFF;
+  --card:#FFFFFF99;
+  --card-hover:#FFFFFF;
+  --accent:#0A9098;
+  --accent-soft:#0A90981A;
+  --accent-ink:#FFFFFF;
+  --glow:0 0 0 1px #0A909866, 0 6px 22px -8px #0A909840;
+  --scrim:#16202E4D;
+  --sheet:#FFFFFF;
 }
 
 *{box-sizing:border-box}
 html,body{background:transparent;margin:0;padding:0}
 body{
   font-family:"IBM Plex Sans Arabic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  color:var(--ink);
-  font-size:15px;
-  line-height:1.5;
-  -webkit-font-smoothing:antialiased;
+  color:var(--ink);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;
 }
-:focus-visible{outline:2px solid var(--accent-c);outline-offset:2px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:12px}
 
-/* The embed cannot read the portal's theme, so it must not depend on it.
-   It carries its own opaque surface and stays legible on a light or dark backdrop. */
-.wrap{
-  position:relative;
-  max-width:960px;margin:0 auto;padding:22px 22px 26px;
-  background:var(--panel);border:1px solid var(--line);border-radius:14px;
-}
-@media (max-width:620px){ .wrap{border:0;border-radius:0;padding:16px 12px 22px} }
+.wrap{width:100%;max-width:1200px;margin:0 auto;padding:4px 4px 20px}
 
-/* ---------- test bar ---------- */
-.bar{
-  display:flex;gap:8px;flex-wrap:wrap;align-items:center;
-  padding-bottom:14px;margin-bottom:16px;border-bottom:1px solid var(--line-soft);
-}
+h1{font-size:clamp(20px,2.6vw,26px);font-weight:600;letter-spacing:-.015em;margin:0 0 4px}
+.lede{margin:0 0 20px;color:var(--ink-2);font-size:14px;max-width:62ch}
+
+.bar{display:flex;gap:10px;align-items:center;margin-bottom:16px}
 .bar[hidden]{display:none}
-.bar .sp{flex:1}
-.pick{
-  min-width:118px;font:inherit;font-size:12.5px;color:var(--ink);background:var(--fill-2);
-  border:1px solid var(--line);border-radius:999px;padding:5px 10px;cursor:pointer;
-}
 .bar label{font-size:12.5px;color:var(--ink-3)}
-
-/* ---------- head ---------- */
-h1{
-  font-size:clamp(21px,3.4vw,27px);font-weight:600;letter-spacing:-.015em;
-  margin:0 0 4px;
-}
-.lede{margin:0 0 22px;color:var(--ink-2);font-size:14px;max-width:56ch}
-
-/* ---------- matrix ---------- */
-.matrix{border-top:1px solid var(--line)}
-.grid{
-  display:grid;
-  grid-template-columns:minmax(96px,1.15fr) repeat(4,minmax(0,1fr));
-  align-items:stretch;
+.pick{
+  min-width:130px;font:inherit;font-size:12.5px;color:var(--ink);
+  background:var(--card-hover);border:1px solid var(--line);border-radius:10px;
+  padding:6px 10px;cursor:pointer;
 }
 
-.hcell{
-  padding:12px 8px 11px;border-bottom:1px solid var(--line);
-  display:flex;flex-direction:column;gap:6px;align-items:flex-start;
-}
-.hcell.lbl{border-bottom:1px solid var(--line)}
-.plan-btn{
-  font:inherit;font-weight:600;font-size:14.5px;color:var(--ink);
-  background:none;border:0;padding:0;cursor:pointer;text-align:start;
-  border-bottom:2px solid transparent;
-}
-.plan-btn:hover{border-bottom-color:var(--accent-c)}
-.mine{
-  font-size:10.5px;font-weight:500;color:var(--accent-ink);background:var(--accent-c);
-  border-radius:999px;padding:1px 7px;letter-spacing:.01em;
-}
+/* ---------- cards ----------
+   Three per row, so new account types drop in without a layout change. */
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;
+  list-style:none;margin:0;padding:0}
+@media (max-width:900px){ .cards{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:560px){ .cards{grid-template-columns:1fr} }
 
-.rlabel{
-  padding:13px 8px;font-size:12.5px;color:var(--ink-2);
-  border-bottom:1px solid var(--line-soft);display:flex;align-items:center;
+.card{
+  font:inherit;color:inherit;text-align:start;cursor:pointer;width:100%;
+  background:var(--card);border:1px solid var(--line);border-radius:14px;
+  padding:18px 18px 16px;display:flex;flex-direction:column;
+  transition:background .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;
 }
-.cell{
-  padding:13px 8px;font-size:14px;font-weight:500;
-  border-bottom:1px solid var(--line-soft);
-  border-inline-start:1px solid var(--line-soft);
-  display:flex;align-items:center;
-  font-variant-numeric:tabular-nums;
+.card:hover, .card:focus-visible{
+  background:var(--card-hover);
+  border-color:transparent;
+  box-shadow:var(--glow);
+  transform:translateY(-2px);
 }
-.cell.best{background:var(--accent-soft)}
-.cell .u{color:var(--ink-3);font-weight:400;font-size:12.5px;margin-inline-start:3px}
+@media (hover:none){ .card:hover{transform:none;box-shadow:none;background:var(--card)} }
+@media (prefers-reduced-motion:reduce){ .card{transition:none} .card:hover{transform:none} }
 
-.actions{padding:14px 8px 0;border-inline-start:1px solid var(--line-soft)}
-.actions.lbl{border:0}
+.card-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:12px}
+.card-name{font-size:17px;font-weight:600;letter-spacing:-.01em}
+.mine{font-size:10.5px;font-weight:600;color:var(--accent-ink);background:var(--accent);
+  border-radius:999px;padding:2px 8px;white-space:nowrap}
 
-.go{
-  display:inline-flex;font:inherit;font-size:13px;font-weight:600;
-  background:var(--accent-c);color:var(--accent-ink);border:0;border-radius:8px;
-  padding:8px 13px;cursor:pointer;text-decoration:none;width:100%;justify-content:center;
-}
-.go.ghost{background:none;color:var(--ink);border:1px solid var(--line)}
+.spec{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  padding:8px 0;border-top:1px solid var(--line-soft);font-variant-numeric:tabular-nums}
+.spec:first-of-type{border-top:0;padding-top:0}
+.spec .k{font-size:12.5px;color:var(--ink-2);flex:none}
+.spec .v{font-size:14.5px;font-weight:600;text-align:end}
+.spec .v.lead{color:var(--accent)}
+.spec .v small{font-weight:400;font-size:12px;color:var(--ink-3);margin-inline-start:4px}
 
-/* ---------- shared strip ---------- */
+.card-cta{margin-top:14px;font-size:12.5px;font-weight:600;color:var(--accent)}
+
+/* ---------- shared ---------- */
 .shared{margin-top:26px;padding-top:18px;border-top:1px solid var(--line)}
-.shared h2{font-size:13.5px;font-weight:600;margin:0 0 12px;color:var(--ink)}
-.shared ul{
-  list-style:none;margin:0;padding:0;
-  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 22px;
-}
+.shared h2{font-size:13.5px;font-weight:600;margin:0 0 12px}
+.shared ul{list-style:none;margin:0;padding:0;
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 22px}
 @media (max-width:560px){ .shared ul{grid-template-columns:repeat(2,minmax(0,1fr))} }
 .shared li{font-size:13px;color:var(--ink-2);display:flex;gap:8px;align-items:baseline}
-.shared li::before{
-  content:"";width:5px;height:5px;flex:none;border-radius:50%;
-  background:var(--accent-c);transform:translateY(-2px);
-}
+.shared li::before{content:"";width:5px;height:5px;flex:none;border-radius:50%;
+  background:var(--accent);transform:translateY(-2px)}
 
-.legal{margin-top:24px;padding-top:14px;border-top:1px solid var(--line-soft);
+.legal{margin-top:22px;padding-top:14px;border-top:1px solid var(--line-soft);
   font-size:11.5px;color:var(--ink-3);line-height:1.65}
 
-/* ---------- modal ---------- */
-dialog{
-  border:0;padding:0;background:transparent;color:var(--ink);
-  max-width:520px;width:calc(100% - 28px);
-}
-dialog::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
-.sheet{
-  background:var(--sheet);border:1px solid var(--line);border-radius:14px;
-  padding:22px 22px 20px;
-}
+/* ---------- detail panel ---------- */
+dialog{border:0;padding:0;background:transparent;color:var(--ink);max-width:520px;width:calc(100% - 28px)}
+dialog::backdrop{background:var(--scrim);backdrop-filter:blur(3px)}
+.sheet{position:relative;background:var(--sheet);border:1px solid var(--line);
+  border-radius:16px;padding:22px 22px 20px}
 .sheet h3{margin:0;font-size:19px;font-weight:600;letter-spacing:-.01em}
 .sheet .who{margin:3px 0 16px;color:var(--ink-2);font-size:13.5px}
-.close{
-  position:absolute;inset-block-start:14px;inset-inline-end:14px;
-  font:inherit;font-size:18px;line-height:1;background:none;border:0;
-  color:var(--ink-3);cursor:pointer;padding:4px 8px;border-radius:8px;
-}
-.close:hover{color:var(--ink);background:var(--fill-2)}
-.sheet{position:relative}
+.close{position:absolute;inset-block-start:14px;inset-inline-end:14px;font:inherit;font-size:18px;
+  line-height:1;background:none;border:0;color:var(--ink-3);cursor:pointer;padding:4px 8px;border-radius:8px}
+.close:hover{color:var(--ink);background:var(--accent-soft)}
 
 .diff{border-top:1px solid var(--line-soft);margin-bottom:16px}
-.diff .row{
-  display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:baseline;
-  padding:9px 0;border-bottom:1px solid var(--line-soft);font-size:13.5px;
-}
+.diff .row{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:baseline;
+  padding:9px 0;border-bottom:1px solid var(--line-soft);font-size:13.5px}
 .diff .k{color:var(--ink-2);font-size:12.5px}
 .diff .from{color:var(--ink-3);text-decoration:line-through;font-size:12.5px;font-variant-numeric:tabular-nums}
 .diff .to{font-weight:600;font-variant-numeric:tabular-nums}
-.diff .to.up{color:var(--accent-c)}
+.diff .to.lead{color:var(--accent)}
 
-.note{
-  font-size:12.5px;color:var(--ink-2);background:var(--fill);
-  border-inline-start:2px solid var(--accent-c);padding:10px 12px;
-  border-radius:0 8px 8px 0;margin-bottom:16px;line-height:1.6;
-}
+.note{font-size:12.5px;color:var(--ink-2);background:var(--accent-soft);
+  border-inline-start:2px solid var(--accent);padding:10px 12px;
+  border-radius:0 8px 8px 0;margin-bottom:16px;line-height:1.6}
 [dir="rtl"] .note{border-radius:8px 0 0 8px}
-.sheet .cta{display:flex;gap:9px;flex-wrap:wrap}
-.sheet .cta .go{width:auto;flex:1;min-width:130px}
-
-/* ---------- mobile / narrow iframe ---------- */
-@media (max-width:620px){
-  .wrap{padding:14px 12px 22px}
-  .tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:12px;margin-bottom:2px}
-  .tabs button{
-    font:inherit;font-size:13px;font-weight:600;white-space:nowrap;
-    background:var(--fill);color:var(--ink-2);border:1px solid var(--line);
-    border-radius:999px;padding:6px 14px;cursor:pointer;
-  }
-  .tabs button[aria-selected="true"]{background:var(--accent-c);color:var(--accent-ink);border-color:transparent}
-  .grid{grid-template-columns:1fr auto}
-  .grid > *[data-col]:not([data-col="0"]){display:none}
-  .grid > *[data-col="0"]{display:flex}
-  .grid > *[data-col].on{display:flex}
-  .cell,.actions{border-inline-start:0}
-  .cell{justify-content:flex-end}
-  .hcell{align-items:flex-end}
-}
-@media (min-width:621px){ .tabs{display:none} }
-
-@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.cta{display:flex;gap:9px;flex-wrap:wrap}
+.go{display:inline-flex;justify-content:center;flex:1;min-width:130px;font:inherit;font-size:13px;
+  font-weight:600;background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;
+  padding:11px 14px;cursor:pointer;text-decoration:none}
+.go.ghost{background:none;color:var(--ink);border:1px solid var(--line)}
+.go.ghost:hover{border-color:var(--accent);color:var(--accent)}
 </style>
 </head>
 <body>
 <div class="wrap">
 
+  <h1 id="title"></h1>
+  <p class="lede" id="lede"></p>
+
   <div class="bar" id="testbar">
-    <div class="sp"></div>
     <label for="mine" id="mineLbl"></label>
     <select class="pick" id="mine">
       <option value="">—</option>
@@ -229,12 +165,7 @@ dialog::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
     </select>
   </div>
 
-  <h1 id="title"></h1>
-  <p class="lede" id="lede"></p>
-
-  <div class="tabs" id="tabs" role="tablist"></div>
-
-  <div class="matrix"><div class="grid" id="grid"></div></div>
+  <ul class="cards" id="cards"></ul>
 
   <section class="shared">
     <h2 id="sharedH"></h2>
@@ -259,40 +190,27 @@ dialog::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
 </dialog>
 
 <script>
-/* =======================================================================
-   DATA  — single source of truth. Values taken from maxifyfx.com/compare-plans
-   ======================================================================= */
+/* =========================================================================
+   DATA — single source of truth. Add an account here and the grid grows.
+   ========================================================================= */
 const PLANS = [
-  { id:"standard", name:"Standard",
-    deposit:15,   commission:0, spreadFrom:0.6, leverage:300,
-    url:"https://my.maxifyfx.com/en/register",
+  { id:"standard", name:"Standard", deposit:15,   commission:0, spreadFrom:0.6, leverage:300,
     more:"https://www.maxifyfx.com/standard-account" },
-  { id:"zero", name:"Zero",
-    deposit:4500, commission:7, spreadFrom:0.1, leverage:300, raw:true,
-    url:"https://my.maxifyfx.com/en/register",
+  { id:"zero",     name:"Zero",     deposit:4500, commission:7, spreadFrom:0.1, leverage:300, raw:true,
     more:"https://www.maxifyfx.com/zero-account" },
-  { id:"fy", name:"FY",
-    deposit:1000, commission:4, spreadFrom:0.3, leverage:300,
-    url:"https://my.maxifyfx.com/en/register",
+  { id:"fy",       name:"FY",       deposit:1000, commission:4, spreadFrom:0.3, leverage:300,
     more:"https://www.maxifyfx.com/fy-account" },
-  { id:"ea", name:"EA",
-    deposit:500,  commission:0, spreadFrom:2.0, leverage:100, points:true,
-    url:"https://my.maxifyfx.com/en/register",
+  { id:"ea",       name:"EA",       deposit:500,  commission:0, spreadFrom:2.0, leverage:100, points:true,
     more:"https://www.maxifyfx.com/ea-account" }
 ];
 
 const T = {
   ar:{
     title:"المقارنة بين الحسابات",
-    lede:"أربعة حسابات تختلف في أربع نقاط فقط. باقي الشروط واحدة عند الجميع.",
+    lede:"الحسابات تختلف في أربع نقاط فقط. باقي الشروط واحدة عند الجميع. اضغط أي حساب لتشوف تفاصيله.",
     rows:{deposit:"أقل إيداع", commission:"العمولة", spread:"السبريد", leverage:"الرافعة"},
-    page:"صفحة الحساب",
     perLot:"للّوت", noComm:"بدون عمولة", from:"من", points:"نقطة", raw:"+ سبريد خام",
-    upTo:"حتى",
-    open:"افتح حساب",
-    details:"تفاصيل الحساب",
-    mineLbl:"حسابي الحالي",
-    mine:"حسابك",
+    open:"افتح حساب", page:"صفحة الحساب", details:"التفاصيل", mineLbl:"حسابي الحالي", mine:"حسابك",
     sharedH:"متوفر في كل الحسابات",
     shared:["أصغر لوت 0.01","تنفيذ ECN Direct Market","بدون عمولة سواب","التداول الآلي مدعوم","VPS مدعوم","ميتاتريدر 5","حرية كاملة في إدارة المخاطر"],
     who:{
@@ -301,7 +219,6 @@ const T = {
       fy:"وسط بين السبريد الضيق والعمولة المنخفضة.",
       ea:"مخصص للتداول الآلي والاكسبيرتات."
     },
-    vsHead:"مقارنة بحسابك الحالي",
     noteNoMine:"اختر حسابك الحالي من الأعلى لتشوف الفرق مباشرة.",
     noteSame:"هذا هو حسابك الحالي.",
     noteCost:"السبريد الخام يتغير حسب السيولة ووقت الجلسة، فالتكلفة النهائية تعتمد على حجم تداولك وليس على رقم ثابت.",
@@ -309,15 +226,10 @@ const T = {
   },
   en:{
     title:"Compare accounts",
-    lede:"Four accounts that differ on four points only. Everything else is identical.",
+    lede:"The accounts differ on four points only. Everything else is identical. Tap an account for details.",
     rows:{deposit:"Minimum deposit", commission:"Commission", spread:"Spread", leverage:"Leverage"},
-    page:"Account page",
     perLot:"per lot", noComm:"None", from:"from", points:"points", raw:"+ raw spread",
-    upTo:"up to",
-    open:"Open account",
-    details:"Account details",
-    mineLbl:"My current account",
-    mine:"Yours",
+    open:"Open account", page:"Account page", details:"Details", mineLbl:"My current account", mine:"Yours",
     sharedH:"Included with every account",
     shared:["0.01 minimum lot","ECN Direct Market execution","No swap commission","Automated trading supported","VPS supported","MetaTrader 5","Full risk-management freedom"],
     who:{
@@ -326,7 +238,6 @@ const T = {
       fy:"A middle ground between tight spread and low commission.",
       ea:"Built for automated trading and expert advisors."
     },
-    vsHead:"Against your current account",
     noteNoMine:"Pick your current account above to see the difference.",
     noteSame:"This is your current account.",
     noteCost:"Raw spread moves with liquidity and session, so the final cost depends on your volume rather than one fixed number.",
@@ -334,210 +245,138 @@ const T = {
   }
 };
 
-/* =======================================================================
-   STATE
-   ======================================================================= */
+/* =========================================================================
+   B2CORE embed protocol.
+   The portal does not broadcast. It waits for the frame to announce itself,
+   then sends the current theme and language, and pushes every later change.
+   ========================================================================= */
 const q = new URLSearchParams(location.search);
-/* ---------------------------------------------------------------------------
-   B2CORE embed protocol (confirmed against the Max UP embed).
-
-   The portal does not broadcast to frames. It waits for the frame to announce
-   itself with {type:"embed-iframe-ready"}, then replies with the current theme
-   and language, and pushes an update whenever the client changes either.
-
-   Nothing else works: no URL parameters, no readable parent DOM
-   (my.maxifyfx.com is a separate origin either way), no prefers-color-scheme.
-   URL params are kept only as a manual override for testing.
-   --------------------------------------------------------------------------- */
 const B2CORE_ORIGIN = "https://my.maxifyfx.com";
 
-function paramTheme(){
-  const v = (q.get("theme") || "").toLowerCase();
-  return /light/.test(v) ? "light" : /dark/.test(v) ? "dark" : null;
-}
-function paramLang(){
-  const v = (q.get("lang") || "").toLowerCase().slice(0,2);
-  return v === "en" ? "en" : v === "ar" ? "ar" : null;
-}
-
-let theme = paramTheme() || "dark";
-let lang  = paramLang()  || "ar";
+const pTheme = (q.get("theme")||"").toLowerCase();
+const pLang  = (q.get("lang") ||"").toLowerCase().slice(0,2);
+let theme = /light/.test(pTheme) ? "light" : "dark";
+let lang  = pLang === "en" ? "en" : "ar";
+let mine  = (q.get("account")||"").toLowerCase();
+if (q.get("ui") === "clean") document.getElementById("testbar").hidden = true;
 
 addEventListener("message", e => {
   if (e.origin !== B2CORE_ORIGIN || e.source !== window.parent || !e.data) return;
   const d = e.data;
-
   if (d.type === "embed-theme-change"){
-    /* the portal sends "light-theme" / "dark-theme" */
     const next = d.theme === "light-theme" ? "light" : d.theme === "dark-theme" ? "dark" : null;
     if (next && next !== theme){ theme = next; render(); }
-    return;
   }
-
   if (d.type === "embed-language-change"){
     const next = d.lang === "ar" ? "ar" : "en";
     if (next !== lang){ lang = next; render(); }
   }
 });
 
-/* Announce the frame. Retry briefly in case the portal binds its own listener
-   a moment after the frame loads; it stops as soon as the portal answers. */
-let announced = false;
-addEventListener("message", e => { if (e.origin === B2CORE_ORIGIN) announced = true; });
-function announce(){
-  try{ window.parent.postMessage({ type:"embed-iframe-ready" }, B2CORE_ORIGIN); }catch(e){}
-}
+/* Announce, then retry briefly in case the portal binds its listener a beat later. */
+let answered = false;
+addEventListener("message", e => { if (e.origin === B2CORE_ORIGIN) answered = true; });
+const announce = () => { try{ parent.postMessage({type:"embed-iframe-ready"}, B2CORE_ORIGIN); }catch(e){} };
 announce();
-[100, 400, 1200].forEach(ms => setTimeout(() => { if (!announced) announce(); }, ms));
+[100, 400, 1200].forEach(ms => setTimeout(() => { if (!answered) announce(); }, ms));
 
-let mine  = (q.get("account") || "").toLowerCase();
-let active = 0;
-if (q.get("ui") === "clean") document.getElementById("testbar").hidden = true;
-
+/* =========================================================================
+   RENDER
+   ========================================================================= */
 const $ = id => document.getElementById(id);
 const t = () => T[lang];
 const plan = id => PLANS.find(p => p.id === id);
-
-/* ---------- value formatting ---------- */
 const money = n => "$" + n.toLocaleString("en-US");
+const KEYS = ["deposit","commission","spread","leverage"];
+
 function fmt(p, key){
   const L = t();
-  if (key === "deposit")  return {v: money(p.deposit)};
-  if (key === "commission") return p.commission
-      ? {v: money(p.commission), u: L.perLot}
-      : {v: L.noComm};
-  if (key === "spread")   return p.points
-      ? {v: p.spreadFrom, u: L.points}
-      : {v: L.from + " " + p.spreadFrom, u: p.raw ? L.raw : ""};
-  if (key === "leverage") return {v: "1:" + p.leverage, u: ""};
+  if (key === "deposit")    return {v: money(p.deposit)};
+  if (key === "commission") return p.commission ? {v: money(p.commission), u: L.perLot} : {v: L.noComm};
+  if (key === "spread")     return p.points ? {v: p.spreadFrom, u: L.points}
+                                            : {v: L.from + " " + p.spreadFrom, u: p.raw ? L.raw : ""};
+  return {v: "1:" + p.leverage};
 }
-/* lower is better for deposit/commission/spread; higher for leverage */
-const BEST = {
-  deposit:   Math.min(...PLANS.map(p=>p.deposit)),
-  commission:Math.min(...PLANS.map(p=>p.commission)),
-  spread:    Math.min(...PLANS.map(p=>p.spreadFrom)),
-  leverage:  Math.max(...PLANS.map(p=>p.leverage))
-};
-const RAW = {
-  deposit:p=>p.deposit, commission:p=>p.commission, spread:p=>p.spreadFrom, leverage:p=>p.leverage
-};
-/* a value is marked only when it is the single best in its row.
-   ties (three accounts at 1:300, two at zero commission) get no marker,
-   because a marker on half the table stops meaning anything. */
-const UNIQUE = {};
-Object.keys(BEST).forEach(k=>{
-  UNIQUE[k] = PLANS.filter(p => RAW[k](p) === BEST[k]).length === 1;
-});
-const isBest = (p,k) => UNIQUE[k] && RAW[k](p) === BEST[k];
 
-/* =======================================================================
-   RENDER
-   ======================================================================= */
+/* Mark a value only when it is the single best in its category.
+   Ties (three accounts at 1:300) get no marker, or the marker means nothing. */
+const RAW = {deposit:p=>p.deposit, commission:p=>p.commission, spread:p=>p.spreadFrom, leverage:p=>p.leverage};
+const BEST = {
+  deposit:    Math.min(...PLANS.map(RAW.deposit)),
+  commission: Math.min(...PLANS.map(RAW.commission)),
+  spread:     Math.min(...PLANS.map(RAW.spread)),
+  leverage:   Math.max(...PLANS.map(RAW.leverage))
+};
+const UNIQUE = {};
+KEYS.forEach(k => UNIQUE[k] = PLANS.filter(p => RAW[k](p) === BEST[k]).length === 1);
+const isLead = (p,k) => UNIQUE[k] && RAW[k](p) === BEST[k];
+
 function render(){
   const L = t();
   document.documentElement.lang = lang;
   document.documentElement.dir  = lang === "ar" ? "rtl" : "ltr";
   document.documentElement.dataset.theme = theme;
 
-  $("title").textContent = L.title;
-  $("lede").textContent  = L.lede;
+  $("title").textContent   = L.title;
+  $("lede").textContent    = L.lede;
   $("sharedH").textContent = L.sharedH;
-  $("legal").textContent = L.legal;
+  $("legal").textContent   = L.legal;
   $("mineLbl").textContent = L.mineLbl;
   $("mine").value = mine;
 
-
-  /* tabs (narrow only) */
-  $("tabs").innerHTML = PLANS.map((p,i)=>
-    `<button role="tab" aria-selected="${i===active}" data-tab="${i}">${p.name}</button>`).join("");
-
-  /* grid */
-  const g = [];
-  g.push(`<div class="hcell lbl" data-col="0"></div>`);
-  PLANS.forEach((p,i)=>{
+  $("cards").innerHTML = PLANS.map(p => {
     const tag = mine === p.id ? `<span class="mine">${L.mine}</span>` : "";
-    g.push(`<div class="hcell ${i+1===active+1?"on":""}" data-col="${i+1}">
-      <button class="plan-btn" data-open="${p.id}">${p.name}</button>${tag}</div>`);
-  });
-  ["deposit","commission","spread","leverage"].forEach(k=>{
-    g.push(`<div class="rlabel" data-col="0">${L.rows[k]}</div>`);
-    PLANS.forEach((p,i)=>{
+    const specs = KEYS.map(k => {
       const f = fmt(p,k);
-      g.push(`<div class="cell ${isBest(p,k)?"best":""} ${i===active?"on":""}" data-col="${i+1}">
-        ${f.v}${f.u?`<span class="u">${f.u}</span>`:""}</div>`);
-    });
-  });
-  g.push(`<div class="actions lbl" data-col="0"></div>`);
-  PLANS.forEach((p,i)=>{
-    g.push(`<div class="actions ${i===active?"on":""}" data-col="${i+1}">
-      <button class="go ghost" data-open="${p.id}">${L.details}</button></div>`);
-  });
-  $("grid").innerHTML = g.join("");
+      return `<span class="spec"><span class="k">${L.rows[k]}</span>` +
+             `<span class="v ${isLead(p,k)?"lead":""}">${f.v}${f.u?`<small>${f.u}</small>`:""}</span></span>`;
+    }).join("");
+    return `<li><button class="card" data-open="${p.id}">` +
+           `<span class="card-top"><span class="card-name">${p.name}</span>${tag}</span>` +
+           specs +
+           `<span class="card-cta">${L.details}</span></button></li>`;
+  }).join("");
 
-  $("sharedList").innerHTML = L.shared.map(s=>`<li>${s}</li>`).join("");
-
-  syncCols();
+  $("sharedList").innerHTML = L.shared.map(s => `<li>${s}</li>`).join("");
 }
 
-function syncCols(){
-  document.querySelectorAll("#grid [data-col]").forEach(el=>{
-    const c = +el.dataset.col;
-    el.classList.toggle("on", c === 0 || c === active + 1);
-  });
-  document.querySelectorAll("#tabs [data-tab]").forEach(b=>
-    b.setAttribute("aria-selected", +b.dataset.tab === active));
-}
-
-/* =======================================================================
-   MODAL
-   ======================================================================= */
+/* =========================================================================
+   DETAIL PANEL
+   ========================================================================= */
 function openPlan(id){
   const L = t(), p = plan(id), cur = mine ? plan(mine) : null;
   $("dlgTitle").textContent = p.name;
   $("dlgWho").textContent   = L.who[id];
 
-  const keys = ["deposit","commission","spread","leverage"];
-  $("dlgDiff").innerHTML = keys.map(k=>{
+  $("dlgDiff").innerHTML = KEYS.map(k => {
     const to = fmt(p,k), toTxt = to.v + (to.u ? " " + to.u : "");
     let inner = "";
     if (cur && cur.id !== p.id){
       const f = fmt(cur,k);
-      const same = (f.v + (f.u||"")) === (to.v + (to.u||""));
-      if (!same) inner = `${f.v}${f.u?" "+f.u:""}`;
+      if (f.v + (f.u||"") !== to.v + (to.u||"")) inner = f.v + (f.u ? " " + f.u : "");
     }
-    const fromTxt = `<span class="from">${inner}</span>`;
-    return `<div class="row"><span class="k">${L.rows[k]}</span>${fromTxt}
-      <span class="to ${isBest(p,k)?"up":""}">${toTxt}</span></div>`;
+    return `<div class="row"><span class="k">${L.rows[k]}</span>` +
+           `<span class="from">${inner}</span>` +
+           `<span class="to ${isLead(p,k)?"lead":""}">${toTxt}</span></div>`;
   }).join("");
 
-  $("dlgNote").textContent =
-      !cur ? L.noteNoMine
-    : cur.id === p.id ? L.noteSame
-    : L.noteCost;
-
-  $("dlgGo").textContent = L.open + " " + p.name;
-  $("dlgGo").href = `https://my.maxifyfx.com/${lang}/platforms/mt5`;
+  $("dlgNote").textContent = !cur ? L.noteNoMine : cur.id === p.id ? L.noteSame : L.noteCost;
+  $("dlgGo").textContent   = L.open + " " + p.name;
+  $("dlgGo").href          = "https://my.maxifyfx.com/" + lang + "/platforms/mt5";
   $("dlgMore").textContent = L.page;
-  $("dlgMore").href = p.more;
+  $("dlgMore").href        = p.more;
   $("dlg").showModal();
 }
 
-/* =======================================================================
-   EVENTS
-   ======================================================================= */
-document.addEventListener("click", e=>{
+document.addEventListener("click", e => {
   const o = e.target.closest("[data-open]");
-  if (o) return openPlan(o.dataset.open);
-
-  const tab = e.target.closest("[data-tab]");
-  if (tab){ active = +tab.dataset.tab; syncCols(); return; }
-
+  if (o) openPlan(o.dataset.open);
 });
-$("mine").addEventListener("change", e=>{ mine = e.target.value; render(); });
-$("dlgClose").addEventListener("click", ()=> $("dlg").close());
-$("dlg").addEventListener("click", e=>{ if (e.target === $("dlg")) $("dlg").close(); });
+$("mine").addEventListener("change", e => { mine = e.target.value; render(); });
+$("dlgClose").addEventListener("click", () => $("dlg").close());
+$("dlg").addEventListener("click", e => { if (e.target === $("dlg")) $("dlg").close(); });
 
-console.log("compare-accounts build 11 | theme:", theme, "| lang:", lang);
+console.log("compare-accounts build 12 | theme:", theme, "| lang:", lang);
 render();
 </script>
 </body>
