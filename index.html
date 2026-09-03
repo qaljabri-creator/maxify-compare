@@ -27,6 +27,7 @@
   --accent-ink:  #06131A;
   --scrim:    #0A1018CC;
   --sheet:    var(--card, #1F2A3C);
+  --panel:    var(--background, #171F2B);
 }
 [data-theme="light"]{
   color-scheme: light;
@@ -42,6 +43,7 @@
   --accent-ink:  #FFFFFF;
   --scrim:    rgba(22,32,46,.34);
   --sheet:    #FFFFFF;
+  --panel:    #FFFFFF;
 }
 
 *{box-sizing:border-box}
@@ -55,7 +57,21 @@ body{
 }
 :focus-visible{outline:2px solid var(--accent-c);outline-offset:2px}
 
-.wrap{max-width:920px;margin:0 auto;padding:18px 16px 26px}
+/* The embed cannot read the portal's theme, so it must not depend on it.
+   It carries its own opaque surface and stays legible on a light or dark backdrop. */
+.langlink{
+  position:absolute;inset-block-start:10px;inset-inline-end:14px;z-index:2;
+  font:inherit;font-size:12px;font-weight:500;color:var(--ink-3);
+  background:none;border:0;padding:4px 6px;cursor:pointer;border-radius:6px;
+}
+.langlink:hover{color:var(--ink)}
+.langlink[hidden]{display:none}
+.wrap{
+  position:relative;
+  max-width:960px;margin:0 auto;padding:22px 22px 26px;
+  background:var(--panel);border:1px solid var(--line);border-radius:14px;
+}
+@media (max-width:620px){ .wrap{border:0;border-radius:0;padding:16px 12px 22px} }
 
 /* ---------- test bar ---------- */
 .bar{
@@ -207,6 +223,8 @@ dialog::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
 <body>
 <div class="wrap">
 
+  <button class="langlink" id="langlink" hidden></button>
+
   <div class="bar" id="testbar">
     <div class="sp"></div>
     <label for="mine" id="mineLbl"></label>
@@ -339,7 +357,16 @@ function paramLang(){
   }
   return null;
 }
-let lang = paramLang() || readParentLang() || "ar";
+/* B2CORE puts the locale in its own path: my.maxifyfx.com/ar/... , /en/...
+   The referrer is the only piece of the parent URL a cross-origin frame may see,
+   and only when the parent's referrer policy sends the full path. Cheap to try. */
+function referrerLang(){
+  try{
+    const m = new URL(document.referrer).pathname.match(/^\/([a-z]{2})(\/|$)/i);
+    return m ? m[1].toLowerCase() : null;
+  }catch(e){ return null; }
+}
+let lang = paramLang() || readParentLang() || referrerLang() || "ar";
 if (lang !== "en") lang = "ar";
 /* Theme is never a button. It is resolved, in order, from:
    1. an explicit ?theme= on the URL          (works today if B2CORE ever templates the URL)
@@ -454,11 +481,15 @@ function render(){
   g.push(`<div class="actions lbl" data-col="0"></div>`);
   PLANS.forEach((p,i)=>{
     g.push(`<div class="actions ${i===active?"on":""}" data-col="${i+1}">
-      <button class="go" data-open="${p.id}">${L.details}</button></div>`);
+      <button class="go ghost" data-open="${p.id}">${L.details}</button></div>`);
   });
   $("grid").innerHTML = g.join("");
 
   $("sharedList").innerHTML = L.shared.map(s=>`<li>${s}</li>`).join("");
+
+  const ll = $("langlink");
+  ll.hidden = q.get("switcher") !== "1";
+  ll.textContent = lang === "ar" ? "English" : "عربي";
   syncCols();
 }
 
@@ -512,6 +543,8 @@ document.addEventListener("click", e=>{
   const o = e.target.closest("[data-open]");
   if (o) return openPlan(o.dataset.open);
 
+  if (e.target.closest("#langlink")){ lang = lang === "ar" ? "en" : "ar"; render(); return; }
+
   const tab = e.target.closest("[data-tab]");
   if (tab){ active = +tab.dataset.tab; syncCols(); return; }
 
@@ -520,15 +553,62 @@ $("mine").addEventListener("change", e=>{ mine = e.target.value; render(); });
 $("dlgClose").addEventListener("click", ()=> $("dlg").close());
 $("dlg").addEventListener("click", e=>{ if (e.target === $("dlg")) $("dlg").close(); });
 
-/* If B2CORE is ever configured to notify the frame, this picks it up with no further work.
-   Accepted shape: { theme: "dark"|"light", lang: "ar"|"en" } */
-addEventListener("message", e => {
-  if (!/(^https:\/\/)([a-z0-9-]+\.)*(maxifyfx\.com|b2broker\.com)$/.test(e.origin)) return;
-  const d = e.data || {};
+/* ---------------------------------------------------------------------------
+   Parent channel.
+
+   B2CORE talks to embedded frames with Postmate, which is handshake-based:
+   the parent sends {postmate:"handshake"} and the child MUST reply
+   {postmate:"handshake-reply"} before any data flows. A frame that stays
+   silent never receives anything, which is why every automatic signal
+   looked dead from inside. We reply, then read the model it hands us.
+
+   Plain {theme, lang} messages are accepted too, in case the channel changes.
+   --------------------------------------------------------------------------- */
+const PM_TYPE = "application/x-postmate-v1+json";
+const TRUSTED = /^https:\/\/([a-z0-9-]+\.)*(maxifyfx\.com|b2broker\.com)$/;
+
+function applyContext(o){
+  if (!o || typeof o !== "object") return false;
   let changed = false;
-  if (d.theme === "dark" || d.theme === "light"){ theme = d.theme; changed = true; }
-  if (d.lang  === "ar"   || d.lang  === "en"  ){ lang  = d.lang;  changed = true; }
-  if (changed) render();
+  /* accept theme under any plausible key, and values like "light-theme" */
+  for (const k of ["theme","mode","colorScheme","color_scheme","skin","appearance"]){
+    const v = String(o[k] ?? "").toLowerCase();
+    if (!v) continue;
+    const next = /light|day|white/.test(v) ? "light" : /dark|night|black/.test(v) ? "dark" : null;
+    if (next && next !== theme){ theme = next; changed = true; }
+    break;
+  }
+  for (const k of ["lang","locale","language"]){
+    const v = String(o[k] ?? "").toLowerCase().slice(0,2);
+    if (!v) continue;
+    const next = v === "en" ? "en" : "ar";
+    if (next !== lang){ lang = next; changed = true; }
+    break;
+  }
+  return changed;
+}
+
+addEventListener("message", e => {
+  if (!TRUSTED.test(e.origin)) return;
+  const d = e.data;
+  if (!d || typeof d !== "object") return;
+
+  /* 1. complete the Postmate handshake so the channel opens at all */
+  if (d.postmate === "handshake"){
+    e.source.postMessage({ postmate:"handshake-reply", type: PM_TYPE }, e.origin);
+    if (applyContext(d.model)) render();
+    return;
+  }
+
+  /* 2. later updates: the portal emits on theme or language change */
+  if (d.postmate === "emit"){
+    const v = d.value;
+    if (applyContext(v && v.data ? v.data : v)) render();
+    return;
+  }
+
+  /* 3. plain object, no library */
+  if (applyContext(d)) render();
 });
 
 render();

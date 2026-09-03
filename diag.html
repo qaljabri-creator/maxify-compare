@@ -34,9 +34,17 @@ const info = {
 };
 document.getElementById("out").textContent = JSON.stringify(info, null, 2);
 
+/* Reply to a Postmate handshake so the parent will actually start sending us data,
+   and log every frame of the exchange so we can see the real message shape. */
 const seen = [];
 addEventListener("message", e => {
   seen.push({ origin: e.origin, data: e.data });
+  if (e.data && e.data.postmate === "handshake"){
+    try{
+      e.source.postMessage({ postmate:"handshake-reply", type:"application/x-postmate-v1+json" }, e.origin);
+      seen.push({ note: "handshake-reply sent to " + e.origin });
+    }catch(err){ seen.push({ note: "reply failed: " + err.message }); }
+  }
   document.getElementById("pm").textContent = JSON.stringify(seen, null, 2);
 });
 </script>
