@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<!-- build 8 -->
-<html lang="ar" dir="rtl" data-theme="dark" data-build="8">
+<html lang="ar" dir="rtl" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,26 +8,21 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* ---------- tokens ----------
-   Values mirror B2CORE's own design tokens (read from the portal's <html> element).
-   Each var() also tries the parent name first, so if the embed is ever served
-   same-origin / injected, it inherits the portal palette automatically.
-   Cross-origin it simply falls back to the hard-coded value. Zero cost either way. */
 :root{
   color-scheme: dark;
-  --ink:      var(--text-main, #FFFFFF);
-  --ink-2:    var(--text-secondary, #7B8AA4);
+  --ink:      #FFFFFF;
+  --ink-2:    #94A3B8;
   --ink-3:    #7B8AA4A6;
-  --line:     var(--divider, #324462);
+  --line:     #324462;
   --line-soft:#32446299;
   --fill:     rgba(255,255,255,.035);
-  --fill-2:   var(--field, #2B3B54);
-  --accent-c: var(--accent, #1AE7EF);
-  --accent-soft: var(--accent-10, #00BBCC1A);
+  --fill-2:   #2B3B54;
+  --accent-c: #1AE7EF;
+  --accent-soft: rgba(0,187,204,0.1);
   --accent-ink:  #06131A;
   --scrim:    #0A1018CC;
-  --sheet:    var(--card, #1F2A3C);
-  --panel:    var(--background, #171F2B);
+  --sheet:    #1F2A3C;
+  --panel:    #171F2B;
 }
 [data-theme="light"]{
   color-scheme: light;
@@ -58,8 +52,6 @@ body{
 }
 :focus-visible{outline:2px solid var(--accent-c);outline-offset:2px}
 
-/* The embed cannot read the portal's theme, so it must not depend on it.
-   It carries its own opaque surface and stays legible on a light or dark backdrop. */
 .langlink{
   position:absolute;inset-block-start:10px;inset-inline-end:14px;z-index:2;
   font:inherit;font-size:12px;font-weight:500;color:var(--ink-3);
@@ -67,6 +59,7 @@ body{
 }
 .langlink:hover{color:var(--ink)}
 .langlink[hidden]{display:none}
+
 .wrap{
   position:relative;
   max-width:960px;margin:0 auto;padding:22px 22px 26px;
@@ -74,7 +67,6 @@ body{
 }
 @media (max-width:620px){ .wrap{border:0;border-radius:0;padding:16px 12px 22px} }
 
-/* ---------- test bar ---------- */
 .bar{
   display:flex;gap:8px;flex-wrap:wrap;align-items:center;
   padding-bottom:14px;margin-bottom:16px;border-bottom:1px solid var(--line-soft);
@@ -87,14 +79,12 @@ body{
 }
 .bar label{font-size:12.5px;color:var(--ink-3)}
 
-/* ---------- head ---------- */
 h1{
   font-size:clamp(21px,3.4vw,27px);font-weight:600;letter-spacing:-.015em;
-  margin:0 0 4px;
+  margin:0 0 4px; color:var(--ink);
 }
 .lede{margin:0 0 22px;color:var(--ink-2);font-size:14px;max-width:56ch}
 
-/* ---------- matrix ---------- */
 .matrix{border-top:1px solid var(--line)}
 .grid{
   display:grid;
@@ -123,7 +113,7 @@ h1{
   border-bottom:1px solid var(--line-soft);display:flex;align-items:center;
 }
 .cell{
-  padding:13px 8px;font-size:14px;font-weight:500;
+  padding:13px 8px;font-size:14px;font-weight:500; color:var(--ink);
   border-bottom:1px solid var(--line-soft);
   border-inline-start:1px solid var(--line-soft);
   display:flex;align-items:center;
@@ -142,7 +132,6 @@ h1{
 }
 .go.ghost{background:none;color:var(--ink);border:1px solid var(--line)}
 
-/* ---------- shared strip ---------- */
 .shared{margin-top:26px;padding-top:18px;border-top:1px solid var(--line)}
 .shared h2{font-size:13.5px;font-weight:600;margin:0 0 12px;color:var(--ink)}
 .shared ul{
@@ -159,7 +148,6 @@ h1{
 .legal{margin-top:24px;padding-top:14px;border-top:1px solid var(--line-soft);
   font-size:11.5px;color:var(--ink-3);line-height:1.65}
 
-/* ---------- modal ---------- */
 dialog{
   border:0;padding:0;background:transparent;color:var(--ink);
   max-width:520px;width:calc(100% - 28px);
@@ -167,9 +155,9 @@ dialog{
 dialog::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
 .sheet{
   background:var(--sheet);border:1px solid var(--line);border-radius:14px;
-  padding:22px 22px 20px;
+  padding:22px 22px 20px; position:relative;
 }
-.sheet h3{margin:0;font-size:19px;font-weight:600;letter-spacing:-.01em}
+.sheet h3{margin:0;font-size:19px;font-weight:600;letter-spacing:-.01em; color:var(--ink);}
 .sheet .who{margin:3px 0 16px;color:var(--ink-2);font-size:13.5px}
 .close{
   position:absolute;inset-block-start:14px;inset-inline-end:14px;
@@ -177,7 +165,6 @@ dialog::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
   color:var(--ink-3);cursor:pointer;padding:4px 8px;border-radius:8px;
 }
 .close:hover{color:var(--ink);background:var(--fill-2)}
-.sheet{position:relative}
 
 .diff{border-top:1px solid var(--line-soft);margin-bottom:16px}
 .diff .row{
@@ -186,7 +173,7 @@ dialog::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
 }
 .diff .k{color:var(--ink-2);font-size:12.5px}
 .diff .from{color:var(--ink-3);text-decoration:line-through;font-size:12.5px;font-variant-numeric:tabular-nums}
-.diff .to{font-weight:600;font-variant-numeric:tabular-nums}
+.diff .to{font-weight:600;font-variant-numeric:tabular-nums; color:var(--ink);}
 .diff .to.up{color:var(--accent-c)}
 
 .note{
@@ -198,7 +185,6 @@ dialog::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
 .sheet .cta{display:flex;gap:9px;flex-wrap:wrap}
 .sheet .cta .go{width:auto;flex:1;min-width:130px}
 
-/* ---------- mobile / narrow iframe ---------- */
 @media (max-width:620px){
   .wrap{padding:14px 12px 22px}
   .tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:12px;margin-bottom:2px}
@@ -268,26 +254,11 @@ dialog::backdrop{background:var(--scrim);backdrop-filter:blur(2px)}
 </dialog>
 
 <script>
-/* =======================================================================
-   DATA  — single source of truth. Values taken from maxifyfx.com/compare-plans
-   ======================================================================= */
 const PLANS = [
-  { id:"standard", name:"Standard",
-    deposit:15,   commission:0, spreadFrom:0.6, leverage:300,
-    url:"https://my.maxifyfx.com/en/register",
-    more:"https://www.maxifyfx.com/standard-account" },
-  { id:"zero", name:"Zero",
-    deposit:4500, commission:7, spreadFrom:0.1, leverage:300, raw:true,
-    url:"https://my.maxifyfx.com/en/register",
-    more:"https://www.maxifyfx.com/zero-account" },
-  { id:"fy", name:"FY",
-    deposit:1000, commission:4, spreadFrom:0.3, leverage:300,
-    url:"https://my.maxifyfx.com/en/register",
-    more:"https://www.maxifyfx.com/fy-account" },
-  { id:"ea", name:"EA",
-    deposit:500,  commission:0, spreadFrom:2.0, leverage:100, points:true,
-    url:"https://my.maxifyfx.com/en/register",
-    more:"https://www.maxifyfx.com/ea-account" }
+  { id:"standard", name:"Standard", deposit:15, commission:0, spreadFrom:0.6, leverage:300, url:"https://my.maxifyfx.com/en/register", more:"https://www.maxifyfx.com/standard-account" },
+  { id:"zero", name:"Zero", deposit:4500, commission:7, spreadFrom:0.1, leverage:300, raw:true, url:"https://my.maxifyfx.com/en/register", more:"https://www.maxifyfx.com/zero-account" },
+  { id:"fy", name:"FY", deposit:1000, commission:4, spreadFrom:0.3, leverage:300, url:"https://my.maxifyfx.com/en/register", more:"https://www.maxifyfx.com/fy-account" },
+  { id:"ea", name:"EA", deposit:500, commission:0, spreadFrom:2.0, leverage:100, points:true, url:"https://my.maxifyfx.com/en/register", more:"https://www.maxifyfx.com/ea-account" }
 ];
 
 const T = {
@@ -343,154 +314,67 @@ const T = {
   }
 };
 
-/* =======================================================================
-   STATE
-   ======================================================================= */
-const q = new URLSearchParams(location.search);
-function readParentLang(){
-  try{ const l = window.parent.document.documentElement.lang; return l ? l.slice(0,2) : null; }
-  catch(e){ return null; }
-}
-function paramLang(){
-  for (const k of ["lang","locale","language","l","hl","ui-locale"]){
-    const v = (q.get(k) || "").toLowerCase();
-    if (v) return v.slice(0,2);
-  }
-  return null;
-}
-/* B2CORE puts the locale in its own path: my.maxifyfx.com/ar/... , /en/...
-   The referrer is the only piece of the parent URL a cross-origin frame may see,
-   and only when the parent's referrer policy sends the full path. Cheap to try. */
-function referrerLang(){
-  try{
-    const m = new URL(document.referrer).pathname.match(/^\/([a-z]{2})(\/|$)/i);
-    return m ? m[1].toLowerCase() : null;
-  }catch(e){ return null; }
-}
-let lang = paramLang() || readParentLang() || referrerLang() || "ar";
-if (lang !== "en") lang = "ar";
-/* Theme is never a button. It is resolved, in order, from:
-   1. an explicit ?theme= on the URL          (works today if B2CORE ever templates the URL)
-   2. the parent document, read same-origin   (silently blocked cross-origin, by design)
-   3. a postMessage from the parent           (applied live, see listener below)
-   4. dark, which is what B2CORE ships        */
-function readParentTheme(){
-  try{
-    const doc = window.parent.document;
-    const cls = doc.body.classList;
-    if (cls.contains("light-theme")) return "light";
-    if (cls.contains("dark-theme"))  return "dark";
-    const bg = getComputedStyle(doc.documentElement).getPropertyValue("--background").trim();
-    if (bg) return luminance(bg) > .5 ? "light" : "dark";
-  }catch(e){ /* cross-origin: expected, fall through */ }
-  return null;
-}
-function luminance(hex){
-  const m = hex.replace("#","");
-  if (m.length < 6) return 0;
-  const r = parseInt(m.slice(0,2),16), g = parseInt(m.slice(2,4),16), b = parseInt(m.slice(4,6),16);
-  return (0.2126*r + 0.7152*g + 0.0722*b) / 255;
-}
-/* B2CORE may name the parameter anything. Sniff every common spelling and value. */
-function paramTheme(){
-  for (const k of ["theme","mode","colorScheme","color_scheme","color-scheme","skin","appearance","ui-theme"]){
-    const v = (q.get(k) || "").toLowerCase();
-    if (!v) continue;
-    if (/light|day|white/.test(v)) return "light";
-    if (/dark|night|black/.test(v)) return "dark";
-  }
-  return null;
-}
-let theme = paramTheme() || readParentTheme() || "dark";
-let mine  = (q.get("account") || "").toLowerCase();
+let lang = "ar";
+let theme = "dark";
+let mine = "";
 let active = 0;
-if (q.get("ui") === "clean") document.getElementById("testbar").hidden = true;
 
 const $ = id => document.getElementById(id);
 const t = () => T[lang];
 const plan = id => PLANS.find(p => p.id === id);
 
-/* ---------- value formatting ---------- */
 const money = n => "$" + n.toLocaleString("en-US");
 function fmt(p, key){
   const L = t();
-  if (key === "deposit")  return {v: money(p.deposit)};
-  if (key === "commission") return p.commission
-      ? {v: money(p.commission), u: L.perLot}
-      : {v: L.noComm};
-  if (key === "spread")   return p.points
-      ? {v: p.spreadFrom, u: L.points}
-      : {v: L.from + " " + p.spreadFrom, u: p.raw ? L.raw : ""};
+  if (key === "deposit") return {v: money(p.deposit)};
+  if (key === "commission") return p.commission ? {v: money(p.commission), u: L.perLot} : {v: L.noComm};
+  if (key === "spread") return p.points ? {v: p.spreadFrom, u: L.points} : {v: L.from + " " + p.spreadFrom, u: p.raw ? L.raw : ""};
   if (key === "leverage") return {v: "1:" + p.leverage, u: ""};
 }
-/* lower is better for deposit/commission/spread; higher for leverage */
-const BEST = {
-  deposit:   Math.min(...PLANS.map(p=>p.deposit)),
-  commission:Math.min(...PLANS.map(p=>p.commission)),
-  spread:    Math.min(...PLANS.map(p=>p.spreadFrom)),
-  leverage:  Math.max(...PLANS.map(p=>p.leverage))
-};
-const RAW = {
-  deposit:p=>p.deposit, commission:p=>p.commission, spread:p=>p.spreadFrom, leverage:p=>p.leverage
-};
-/* a value is marked only when it is the single best in its row.
-   ties (three accounts at 1:300, two at zero commission) get no marker,
-   because a marker on half the table stops meaning anything. */
+
+const BEST = { deposit: Math.min(...PLANS.map(p=>p.deposit)), commission: Math.min(...PLANS.map(p=>p.commission)), spread: Math.min(...PLANS.map(p=>p.spreadFrom)), leverage: Math.max(...PLANS.map(p=>p.leverage)) };
+const RAW = { deposit:p=>p.deposit, commission:p=>p.commission, spread:p=>p.spreadFrom, leverage:p=>p.leverage };
 const UNIQUE = {};
-Object.keys(BEST).forEach(k=>{
-  UNIQUE[k] = PLANS.filter(p => RAW[k](p) === BEST[k]).length === 1;
-});
+Object.keys(BEST).forEach(k=>{ UNIQUE[k] = PLANS.filter(p => RAW[k](p) === BEST[k]).length === 1; });
 const isBest = (p,k) => UNIQUE[k] && RAW[k](p) === BEST[k];
 
-/* =======================================================================
-   RENDER
-   ======================================================================= */
 function render(){
   const L = t();
   document.documentElement.lang = lang;
-  document.documentElement.dir  = lang === "ar" ? "rtl" : "ltr";
+  document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
   document.documentElement.dataset.theme = theme;
 
   $("title").textContent = L.title;
-  $("lede").textContent  = L.lede;
+  $("lede").textContent = L.lede;
   $("sharedH").textContent = L.sharedH;
   $("legal").textContent = L.legal;
   $("mineLbl").textContent = L.mineLbl;
   $("mine").value = mine;
 
+  $("tabs").innerHTML = PLANS.map((p,i)=>`<button role="tab" aria-selected="${i===active}" data-tab="${i}">${p.name}</button>`).join("");
 
-  /* tabs (narrow only) */
-  $("tabs").innerHTML = PLANS.map((p,i)=>
-    `<button role="tab" aria-selected="${i===active}" data-tab="${i}">${p.name}</button>`).join("");
-
-  /* grid */
   const g = [];
   g.push(`<div class="hcell lbl" data-col="0"></div>`);
   PLANS.forEach((p,i)=>{
     const tag = mine === p.id ? `<span class="mine">${L.mine}</span>` : "";
-    g.push(`<div class="hcell ${i+1===active+1?"on":""}" data-col="${i+1}">
-      <button class="plan-btn" data-open="${p.id}">${p.name}</button>${tag}</div>`);
+    g.push(`<div class="hcell ${i+1===active+1?"on":""}" data-col="${i+1}"><button class="plan-btn" data-open="${p.id}">${p.name}</button>${tag}</div>`);
   });
   ["deposit","commission","spread","leverage"].forEach(k=>{
     g.push(`<div class="rlabel" data-col="0">${L.rows[k]}</div>`);
     PLANS.forEach((p,i)=>{
       const f = fmt(p,k);
-      g.push(`<div class="cell ${isBest(p,k)?"best":""} ${i===active?"on":""}" data-col="${i+1}">
-        ${f.v}${f.u?`<span class="u">${f.u}</span>`:""}</div>`);
+      g.push(`<div class="cell ${isBest(p,k)?"best":""} ${i===active?"on":""}" data-col="${i+1}">${f.v}${f.u?`<span class="u">${f.u}</span>`:""}</div>`);
     });
   });
   g.push(`<div class="actions lbl" data-col="0"></div>`);
   PLANS.forEach((p,i)=>{
-    g.push(`<div class="actions ${i===active?"on":""}" data-col="${i+1}">
-      <button class="go ghost" data-open="${p.id}">${L.details}</button></div>`);
+    g.push(`<div class="actions ${i===active?"on":""}" data-col="${i+1}"><button class="go ghost" data-open="${p.id}">${L.details}</button></div>`);
   });
   $("grid").innerHTML = g.join("");
-
   $("sharedList").innerHTML = L.shared.map(s=>`<li>${s}</li>`).join("");
 
   const ll = $("langlink");
-  ll.hidden = q.get("switcher") !== "1";
-  ll.textContent = lang === "ar" ? "English" : "عربي";
+  ll.hidden = true; 
   syncCols();
 }
 
@@ -499,17 +383,13 @@ function syncCols(){
     const c = +el.dataset.col;
     el.classList.toggle("on", c === 0 || c === active + 1);
   });
-  document.querySelectorAll("#tabs [data-tab]").forEach(b=>
-    b.setAttribute("aria-selected", +b.dataset.tab === active));
+  document.querySelectorAll("#tabs [data-tab]").forEach(b=>b.setAttribute("aria-selected", +b.dataset.tab === active));
 }
 
-/* =======================================================================
-   MODAL
-   ======================================================================= */
 function openPlan(id){
   const L = t(), p = plan(id), cur = mine ? plan(mine) : null;
   $("dlgTitle").textContent = p.name;
-  $("dlgWho").textContent   = L.who[id];
+  $("dlgWho").textContent = L.who[id];
 
   const keys = ["deposit","commission","spread","leverage"];
   $("dlgDiff").innerHTML = keys.map(k=>{
@@ -521,15 +401,10 @@ function openPlan(id){
       if (!same) inner = `${f.v}${f.u?" "+f.u:""}`;
     }
     const fromTxt = `<span class="from">${inner}</span>`;
-    return `<div class="row"><span class="k">${L.rows[k]}</span>${fromTxt}
-      <span class="to ${isBest(p,k)?"up":""}">${toTxt}</span></div>`;
+    return `<div class="row"><span class="k">${L.rows[k]}</span>${fromTxt}<span class="to ${isBest(p,k)?"up":""}">${toTxt}</span></div>`;
   }).join("");
 
-  $("dlgNote").textContent =
-      !cur ? L.noteNoMine
-    : cur.id === p.id ? L.noteSame
-    : L.noteCost;
-
+  $("dlgNote").textContent = !cur ? L.noteNoMine : cur.id === p.id ? L.noteSame : L.noteCost;
   $("dlgGo").textContent = L.open + " " + p.name;
   $("dlgGo").href = `https://my.maxifyfx.com/${lang}/platforms/mt5`;
   $("dlgMore").textContent = L.page;
@@ -537,91 +412,59 @@ function openPlan(id){
   $("dlg").showModal();
 }
 
-/* =======================================================================
-   EVENTS
-   ======================================================================= */
 document.addEventListener("click", e=>{
   const o = e.target.closest("[data-open]");
   if (o) return openPlan(o.dataset.open);
-
-  if (e.target.closest("#langlink")){ lang = lang === "ar" ? "en" : "ar"; render(); return; }
-
   const tab = e.target.closest("[data-tab]");
   if (tab){ active = +tab.dataset.tab; syncCols(); return; }
-
 });
 $("mine").addEventListener("change", e=>{ mine = e.target.value; render(); });
 $("dlgClose").addEventListener("click", ()=> $("dlg").close());
 $("dlg").addEventListener("click", e=>{ if (e.target === $("dlg")) $("dlg").close(); });
 
-/* ---------------------------------------------------------------------------
-   Parent channel.
+/* نظام المزامنة اللحظية (يقرأ الثيم واللغة من الصفحة الأم فور التغيير) */
+setInterval(() => {
+  try {
+    const pBody = window.parent.document.body;
+    const pHtml = window.parent.document.documentElement;
 
-   B2CORE talks to embedded frames with Postmate, which is handshake-based:
-   the parent sends {postmate:"handshake"} and the child MUST reply
-   {postmate:"handshake-reply"} before any data flows. A frame that stays
-   silent never receives anything, which is why every automatic signal
-   looked dead from inside. We reply, then read the model it hands us.
-
-   Plain {theme, lang} messages are accepted too, in case the channel changes.
-   --------------------------------------------------------------------------- */
-const PM_TYPE = "application/x-postmate-v1+json";
-const TRUSTED = /^https:\/\/([a-z0-9-]+\.)*(maxifyfx\.com|b2broker\.com)$/;
-
-function applyContext(o){
-  if (!o || typeof o !== "object") return false;
-  let changed = false;
-  /* accept theme under any plausible key, and values like "light-theme" */
-  for (const k of ["theme","mode","colorScheme","color_scheme","skin","appearance"]){
-    const v = String(o[k] ?? "").toLowerCase();
-    if (!v) continue;
-    const next = /light|day|white/.test(v) ? "light" : /dark|night|black/.test(v) ? "dark" : null;
-    if (next && next !== theme){ theme = next; changed = true; }
-    break;
-  }
-  for (const k of ["lang","locale","language"]){
-    const v = String(o[k] ?? "").toLowerCase().slice(0,2);
-    if (!v) continue;
-    const next = v === "en" ? "en" : "ar";
-    if (next !== lang){ lang = next; changed = true; }
-    break;
-  }
-  return changed;
-}
-
-addEventListener("message", e => {
-  if (!TRUSTED.test(e.origin)) return;
-  const d = e.data;
-  if (!d || typeof d !== "object") return;
-
-  /* 1. complete the Postmate handshake so the channel opens at all */
-  if (d.postmate === "handshake"){
-    e.source.postMessage({ postmate:"handshake-reply", type: PM_TYPE }, e.origin);
-    if (applyContext(d.model)) render();
-    return;
-  }
-
-  /* 2. later updates: the portal emits on theme or language change */
-  if (d.postmate === "emit"){
-    /* emit payloads are nested differently across Postmate versions
-       (value, value.data, model, data). Walk shallowly and take the first hit. */
-    const seen = new Set();
-    const stack = [d.value, d.model, d.data, d];
-    while (stack.length){
-      const o = stack.shift();
-      if (!o || typeof o !== "object" || seen.has(o)) continue;
-      seen.add(o);
-      if (applyContext(o)){ render(); return; }
-      if (seen.size < 12) for (const val of Object.values(o)) stack.push(val);
+    // كشف الثيم
+    let newTheme = "dark";
+    if (pBody.classList.contains("light-theme") || pHtml.getAttribute("data-theme") === "light" || pBody.classList.contains("light")) {
+      newTheme = "light";
+    } else if (pBody.classList.contains("dark-theme") || pHtml.getAttribute("data-theme") === "dark" || pBody.classList.contains("dark")) {
+      newTheme = "dark";
     }
-    return;
-  }
 
-  /* 3. plain object, no library */
-  if (applyContext(d)) render();
+    // كشف اللغة
+    let newLang = lang;
+    const pHlang = pHtml.lang || pHtml.getAttribute("dir") || pBody.getAttribute("dir");
+    if (pHlang) {
+      if (pHlang.toLowerCase().includes("ar") || pHlang.toLowerCase() === "rtl") newLang = "ar";
+      else if (pHlang.toLowerCase().includes("en") || pHlang.toLowerCase() === "ltr") newLang = "en";
+    }
+
+    if (newTheme !== theme || newLang !== lang) {
+      theme = newTheme;
+      lang = newLang;
+      render();
+    }
+  } catch (err) {
+    // تجاوز أخطاء الصليب الأمني (CORS) في حال اختلاف النطاقات الكلي
+  }
+}, 300);
+
+/* دعم Postmate وبرمجة الرسائل التقليدية */
+addEventListener("message", e => {
+  const d = e.data;
+  if (!d) return;
+  if (d.postmate === "handshake" && e.source) {
+    try { e.source.postMessage({ postmate:"handshake-reply", type:"application/x-postmate-v1+json" }, e.origin); } catch(err){}
+  }
+  if (d.theme) { theme = d.theme; render(); }
+  if (d.lang) { lang = d.lang; render(); }
 });
 
-console.log("compare-accounts build 8 | theme:", theme, "| lang:", lang);
 render();
 </script>
 </body>
