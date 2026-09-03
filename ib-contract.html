@@ -1,0 +1,376 @@
+<!-- build 4 -->
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark" data-build="4">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IB Contract</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ---------- tokens: same palette as the compare page ---------- */
+:root{
+  color-scheme: dark;
+  --ink:#FFFFFF; --ink-2:#7B8AA4; --ink-3:#7B8AA4A6;
+  --line:#324462; --line-soft:#32446288;
+  --card:#1F2A3C66; --card-hover:#1F2A3CCC;
+  --accent:#1AE7EF; --accent-soft:#1AE7EF1F; --accent-ink:#06131A;
+  --warn:#FFA655; --warn-soft:#FFA6551A;
+  --page:#171F2B;
+}
+[data-theme="light"]{
+  color-scheme: light;
+  --ink:#16202E; --ink-2:#5A6B85; --ink-3:#8494AB;
+  --line:#DCE3EC; --line-soft:#E7EDF3;
+  --card:#FFFFFF99; --card-hover:#FFFFFF;
+  --accent:#0A9098; --accent-soft:#0A90981A; --accent-ink:#FFFFFF;
+  --warn:#B4650E; --warn-soft:#B4650E14;
+  --page:#F5F7FA;
+}
+
+*{box-sizing:border-box}
+html{background:var(--page)}
+body{background:var(--page);margin:0;padding:0;min-height:100vh;
+  font-family:"IBM Plex Sans Arabic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--ink);font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:8px}
+
+.wrap{width:100%;max-width:900px;margin:0 auto;padding:18px 16px 28px}
+
+/* ---------- head ---------- */
+.head{margin-bottom:22px}
+h1{font-size:clamp(20px,2.6vw,26px);font-weight:600;letter-spacing:-.015em;margin:0 0 6px}
+.intro{margin:0;color:var(--ink-2);font-size:14px;max-width:70ch;line-height:1.7}
+
+/* ---------- sections ---------- */
+#definitions .items li{background:none;border:0;padding:6px 0;border-bottom:1px solid var(--line-soft);border-radius:0}
+#definitions .items{gap:0}
+section{scroll-margin-top:16px;padding-bottom:26px;margin-bottom:26px;border-bottom:1px solid var(--line-soft)}
+section:last-of-type{border-bottom:0;margin-bottom:0}
+h2{font-size:17px;font-weight:600;letter-spacing:-.01em;margin:0 0 14px;
+  display:flex;align-items:baseline;gap:9px}
+h2 .num{font-size:12px;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums}
+
+.items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.items li{
+  background:var(--card);border:1px solid var(--line-soft);border-radius:10px;
+  padding:12px 14px;font-size:14px;color:var(--ink-2);line-height:1.7;
+}
+.items li b{color:var(--ink);font-weight:600}
+.items li a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+
+/* red lines carry their own weight */
+.red h2 .num{color:var(--warn)}
+.red .items li{background:var(--warn-soft);border-color:transparent;
+  border-inline-start:2px solid var(--warn)}
+
+.note{margin-top:14px;font-size:13px;color:var(--ink-2);line-height:1.7}
+.note b{color:var(--ink);font-weight:600}
+
+/* commission table */
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:14px}
+@media (max-width:560px){ .grid2{grid-template-columns:1fr} }
+.box{background:var(--card);border:1px solid var(--line-soft);border-radius:10px;padding:13px 14px}
+.box h3{margin:0 0 8px;font-size:12.5px;font-weight:600;color:var(--ink-3)}
+.box p{margin:0;font-size:14px;color:var(--ink);line-height:1.7}
+.box.no h3{color:var(--warn)}
+
+.tw{margin:0 0 16px}
+.tw figcaption{font-size:12px;font-weight:600;color:var(--ink-3);margin-bottom:8px}
+.scroll{overflow-x:auto;border:1px solid var(--line-soft);border-radius:10px;background:var(--card)}
+table{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums;min-width:480px}
+th{text-align:start;font-size:11.5px;font-weight:600;color:var(--ink-3);
+  padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--line-soft);color:var(--ink-2);white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+td.lv{color:var(--ink);font-weight:600}
+td.tot{color:var(--accent);font-weight:600}
+
+.legal{margin-top:26px;padding-top:16px;border-top:1px solid var(--line);
+  font-size:11.5px;color:var(--ink-3);line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="head">
+    <h1 id="title"></h1>
+    <p class="intro" id="intro"></p>
+  </div>
+
+  <main id="body"></main>
+
+  <p class="legal" id="legal"></p>
+</div>
+
+<script>
+/* =========================================================================
+   CONTENT — the whole agreement lives here. Editing a clause is one line;
+   the layout never needs to change.
+   ========================================================================= */
+const DOC = {
+ar:{
+  title:"عقد الوكالة",
+  intro:"يُبرم هذا العقد بين شركة MaxifyFX، ويُشار إليها فيما بعد بـ\"الشركة\"، وبين الوكيل المعرّف (Introducing Broker)، ويُشار إليه فيما بعد بـ\"الوكيل\". ويسري اعتباراً من تاريخ تفعيل الوكالة في غرفة الوكيل، ويظل نافذاً ما دامت الوكالة قائمة.",
+  legal:"تحتفظ الشركة بحق تعديل أحكام هذا العقد، وتُخطر الوكلاء بأي تعديل عبر غرفة الوكيل قبل سريانه. ويُعدّ استمرار الوكيل في الوكالة بعد سريان التعديل قبولاً به.",
+  sections:[
+
+    { id:"definitions", nav:"التعريفات", h:"التعريفات",
+      lead:"يكون للمصطلحات الآتية، أينما وردت في هذا العقد، المعاني المبينة إزاءها ما لم يقتضِ السياق غير ذلك:",
+      items:[
+        "<b>الوكالة:</b> العلاقة التي ينظمها هذا العقد بين الشركة والوكيل، ويُشار إليها في غرفة الوكيل برقم تعريفي خاص.",
+        "<b>العميل المُحال:</b> كل عميل سجّل لدى الشركة عبر رابط الوكيل أو رمزه التعريفي، أو حُوّل إلى وكالته بقرار من الشركة.",
+        "<b>العميل النشط:</b> العميل المُحال الذي يتداول خمسة لوتات فأكثر خلال الشهر التقويمي الواحد.",
+        "<b>المستوى:</b> إحدى درجات الوكالة الأربع (Gold وPlatinum وPremium وDiamond)، وتُحدَّد بعدد العملاء النشطين وفق وثيقة برنامج الشركاء.",
+        "<b>وثيقة برنامج الشركاء:</b> الوثيقة المعتمدة لدى الشركة التي تبيّن مقادير العمولات والحوافز وشروط الترقية، وتُنشر في غرفة الوكيل.",
+        "<b>غرفة الوكيل:</b> اللوحة المخصصة للوكيل داخل منصة الشركة، ويُعتدّ بما يظهر فيها من بيانات وأرصدة.",
+        "<b>اتفاقية العميل:</b> الاتفاقية المنشورة على موقع الشركة والمنظمة لعلاقة الشركة بعملائها، ويُعتدّ بأحكامها فيما يخص أسلوب تداول العملاء."
+      ]},
+
+    { id:"scope", nav:"موضوع العقد", h:"المادة الأولى: موضوع العقد",
+      items:[
+        "يتولى الوكيل، بموجب هذا العقد، الترويج لخدمات الشركة واستقطاب عملاء جدد للتداول في الأسواق المالية عبر المنصات المعتمدة لدى الشركة، مقابل عمولة تُحتسب على النحو المبين في المادة الرابعة.",
+        "لا يُنشئ هذا العقد أي علاقة عمل أو شراكة أو وكالة قانونية بين الطرفين، ولا يخوّل الوكيل التعاقد باسم الشركة أو إلزامها تجاه الغير.",
+        "تُعدّ وثيقة برنامج الشركاء جزءاً لا يتجزأ من هذا العقد فيما يخص المقادير والنسب والشروط الرقمية، وعند التعارض بين الوثيقتين يُعمل بما هو أصلح للوكيل."
+      ]},
+
+    { id:"rights", nav:"حقوق الوكيل", h:"المادة الثانية: حقوق الوكيل",
+      lead:"يتمتع الوكيل، طوال سريان هذا العقد، بالحقوق الآتية:",
+      items:[
+        "<b>العمولة.</b> استحقاق عمولة ثابتة عن كل لوت يتداوله عملاؤه المُحالون في الأدوات المؤهلة، وفق مستوى وكالته ومجموعة الأداة المتداولة.",
+        "<b>السحب الحر.</b> سحب العمولة من أول دولار، في أي مستوى، دون حجز ولا شرط ترقية ولا حد أدنى للسحب، وبأي وسيلة متاحة على المنصة.",
+        "<b>ثبات المستوى.</b> الاحتفاظ بأعلى مستوى تبلغه وكالته، فلا يسقط عند تراجع الأداء مؤقتاً.",
+        "<b>الترقية العادلة.</b> الترقية بين المستويات بناءً على عدد العملاء النشطين وحجم التداول حصراً، دون اشتراط أي حجم إيداع.",
+        "<b>الحوافز الإضافية.</b> الاستفادة من الحوافز والمكافآت التي تقررها الشركة فوق العمولة الأساسية، على النحو المبين في وثيقة برنامج الشركاء.",
+        "<b>معادلة المستوى.</b> إذا كان الوكيل قائماً لدى شركة أخرى، مُنح المستوى المكافئ لدى الشركة من يومه الأول بعد تقديم كشف عمولاته.",
+        "<b>الأدوات والدعم.</b> الحصول على لوحة متابعة لعملائه وأحجام تداولهم وأرصدته، وعلى المواد التسويقية الجاهزة، وعلى الدعم الفني والإداري اللازم لإدارة وكالته."
+      ]},
+
+    { id:"company", nav:"التزامات الشركة", h:"المادة الثالثة: التزامات الشركة",
+      items:[
+        "تلتزم الشركة بقيد العمولة في رصيد الوكيل خلال دقائق من إغلاق الصفقة المؤهلة، وبإتاحتها للسحب فوراً.",
+        "تلتزم الشركة بإبقاء تكلفة التداول لدى عملاء الوكيل ثابتة في المستويات الأربعة جميعاً، فلا تُموَّل ترقية الوكيل من حساب عميله.",
+        "تلتزم الشركة بتوفير منصة تداول آمنة واحترافية للعملاء المُحالين.",
+        "تلتزم الشركة بنشر وثيقة برنامج الشركاء في غرفة الوكيل، وبإخطار الوكلاء بأي تعديل عليها قبل سريانه.",
+        "تلتزم الشركة بعدم تعديل مستوى الوكيل بالخفض، إلا في حالات الإنهاء المنصوص عليها في المادة السابعة."
+      ]},
+
+    { id:"commission", nav:"العمولات", h:"المادة الرابعة: العمولات وآلية احتسابها",
+      items:[
+        "<b>طبيعة العمولة.</b> العمولة مبلغ ثابت بالدولار عن كل لوت، ولا تُحتسب كنسبة من فرق السعر المطبّق على العميل.",
+        "<b>المقادير.</b> تُحدَّد قيمة العمولة لكل مستوى ولكل مجموعة من الأدوات، وكذلك الحدود القصوى لكل مجموعة، وفق وثيقة برنامج الشركاء المنشورة في غرفة الوكيل.",
+        "<b>الأدوات المؤهلة.</b> أزواج العملات، والمعادن الثمينة، والسلع بما فيها النفط، والمؤشرات.",
+        "<b>الأدوات غير المؤهلة.</b> العملات الرقمية والأسهم. لا تُحتسب عليها أي عمولة، ولا تدخل تداولاتها في احتساب الترقية ولا في القمة التاريخية للوكالة.",
+        "<b>الحسابات المؤهلة.</b> حسابات ستاندرد وFY وزيرو. ولا تُحتسب أي عمولة على الحساب الآلي (EA).",
+        "<b>أسلوب تداول العملاء.</b> يلتزم الوكيل بإحالة عملاء يتداولون وفق القواعد المعتمدة لدى الشركة. وإذا ثبت أن أحد العملاء يتداول بأسلوب يخالف <a href=\"https://www.maxifyfx.com/client-agreement\" target=\"_blank\" rel=\"noopener\">الممارسات المحظورة</a> المنصوص عليها في اتفاقية العميل (البند 4.4)، جاز للشركة إغلاق حساب ذلك العميل، ولا تستحق عنه أي عمولة.",
+        "<b>العمولات غير الحقيقية.</b> تُخصم أو تُسترد من رصيد الوكيل أي عمولة نتجت عن معاملات مفتعلة لا تنطوي على تعرّض حقيقي للسوق."
+      ]},
+
+    { id:"duties", nav:"التزامات الوكيل", h:"المادة الخامسة: التزامات الوكيل",
+      items:[
+        "يلتزم الوكيل بالترويج لخدمات الشركة بصورة احترافية تتوافق مع الأخلاقيات والمعايير المهنية المتعارف عليها.",
+        "يلتزم الوكيل بتقديم الدعم والإرشاد الأساسي للعملاء الجدد في التسجيل واستخدام المنصة، دون أن يمتد ذلك إلى أي استشارة استثمارية.",
+        "يلتزم الوكيل بالتجاوب مع مراسلات فريق الشركة وعدم الانقطاع عنها.",
+        "يلتزم الوكيل بالقوانين المنظمة للإعلان والتسويق والوساطة المالية في نطاق عمله، ويتحمل وحده مسؤولية ما ينشره.",
+        "يلتزم الوكيل بالسياسات واللوائح التي تصدرها الشركة بشأن برنامج الشركاء."
+      ],
+      note:"لا يُشترط على الوكيل حد أدنى من النشر التسويقي، والنشر مسار حوافز اختياري تنظمه وثيقة برنامج الشركاء."},
+
+    { id:"red", nav:"المحظورات", h:"المادة السادسة: المحظورات", red:true,
+      lead:"يُحظر على الوكيل ما يأتي، ويترتب على مخالفة أي منه إنهاء الوكالة فوراً ودون إشعار سابق:",
+      items:[
+        "تقديم أي وعد بضمان أرباح أو عوائد للعملاء بأي صيغة كانت.",
+        "استلام أي مبالغ مالية من العملاء بأي وسيلة كانت. وتتم جميع الإيداعات عبر القنوات الرسمية للشركة حصراً.",
+        "تقديم استشارات استثمارية أو توصيات تداول للعملاء.",
+        "استخدام العلامة التجارية أو الشعار أو الهوية البصرية للشركة دون إذن كتابي مسبق، أو استخدام اسم الشركة في أي محتوى مسيء أو غير مصرّح به.",
+        "الإفصاح عن بيانات العملاء، أو عن أي معلومات تصله بحكم الوكالة، إلى أي طرف ثالث.",
+        "افتعال معاملات لتوليد عمولات غير حقيقية، ويشمل ذلك التحوّط المتقابل، والتداول بين حسابات مرتبطة، وأي نمط يستهدف توليد حجم دون تعرّض حقيقي للسوق."
+      ]},
+
+    { id:"end", nav:"إنهاء الوكالة", h:"المادة السابعة: إنهاء الوكالة",
+      lead:"لا تُنهى الوكالة إلا في الحالات الآتية حصراً:",
+      items:[
+        "<b>الخمول المتصل.</b> انقطاع الوكيل عن التجاوب مع مراسلات فريق الشركة مدة ثلاثة أشهر متصلة.",
+        "<b>طلب الوكيل.</b> بإشعار كتابي مدته ثلاثون يوماً.",
+        "<b>المعاملات المفتعلة.</b> ثبوت قيام الوكيل بمعاملات تستهدف توليد عمولات غير حقيقية.",
+        "<b>المحظورات.</b> مخالفة أي حكم من أحكام المادة السادسة، أو الإضرار بسمعة الشركة."
+      ],
+      note:"<b>أثر الإنهاء.</b> يتوقف تدفق العمولات عن جميع العملاء المُحالين أو المحوّلين تحت الوكالة اعتباراً من تاريخ الإنهاء، وتُصرف للوكيل العمولات المستحقة حتى ذلك التاريخ. ويلتزم الوكيل بعد الإنهاء بالامتناع عن التشهير بالشركة أو الإساءة إليها بأي صورة، شفهية كانت أو كتابية أو عبر وسائل التواصل."},
+
+    { id:"general", nav:"أحكام عامة", h:"المادة الثامنة: أحكام عامة",
+      items:[
+        "<b>المحتوى الترويجي.</b> يحق للشركة استخدام ونشر أي محتوى ترويجي ينتجه الوكيل عنها على قنواتها ومنصاتها، ويظل الوكيل مسؤولاً عن مطابقة ما ينشره للقوانين المعمول بها.",
+        "<b>حدود المسؤولية.</b> لا تتحمل الشركة مسؤولية أي تصريح أو تعهد أو وعد يصدر عن الوكيل تجاه العملاء أو أي طرف ثالث دون موافقة رسمية من الإدارة.",
+        "<b>الاستقلال.</b> الوكيل مستقل في نشاطه، ويجوز له العمل مع شركات أخرى ما لم يخلّ ذلك بالتزاماته المنصوص عليها في هذا العقد.",
+        "<b>الإخطارات.</b> تُعدّ الإخطارات الموجهة عبر غرفة الوكيل أو البريد الإلكتروني المسجل لدى الشركة منتجة لآثارها من تاريخ إرسالها."
+      ]}
+  ]
+},
+en:{
+  title:"IB Contract",
+  intro:"This agreement is entered into between MaxifyFX, hereinafter the \"Company\", and the Introducing Broker, hereinafter the \"Partner\". It takes effect on the date the agency is activated in the IB Room and remains in force for as long as the agency subsists.",
+  legal:"The Company may amend the provisions of this agreement and will notify partners of any amendment through the IB Room before it takes effect. The Partner's continuation of the agency after an amendment takes effect constitutes acceptance of it.",
+  sections:[
+
+    { id:"definitions", nav:"Definitions", h:"Definitions",
+      lead:"In this agreement the following terms have the meanings set out beside them, unless the context requires otherwise:",
+      items:[
+        "<b>Agency:</b> the relationship governed by this agreement between the Company and the Partner, identified in the IB Room by a unique reference.",
+        "<b>Referred client:</b> any client who registered with the Company through the Partner's link or referral code, or who was transferred to the Partner's agency by decision of the Company.",
+        "<b>Active client:</b> a referred client who trades five lots or more within a single calendar month.",
+        "<b>Level:</b> one of the four grades of agency (Gold, Platinum, Premium and Diamond), determined by the number of active clients in accordance with the Partner Programme document.",
+        "<b>Partner Programme document:</b> the document adopted by the Company setting out commission and incentive amounts and promotion conditions, published in the IB Room.",
+        "<b>IB Room:</b> the Partner's dashboard within the Company's platform. The data and balances shown in it are authoritative.",
+        "<b>Client Agreement:</b> the agreement published on the Company's website governing its relationship with its clients. Its provisions are authoritative as to client trading conduct."
+      ]},
+
+    { id:"scope", nav:"Subject matter", h:"Article 1: Subject matter",
+      items:[
+        "Under this agreement the Partner promotes the Company's services and introduces new clients to trade the financial markets through the Company's approved platforms, in return for commission calculated as set out in Article 4.",
+        "This agreement creates no employment, partnership or legal agency between the parties, and does not authorise the Partner to contract in the Company's name or to bind it towards third parties.",
+        "The Partner Programme document forms an integral part of this agreement as to amounts, rates and numerical conditions. Where the two documents conflict, the provision more favourable to the Partner prevails."
+      ]},
+
+    { id:"rights", nav:"Partner rights", h:"Article 2: Rights of the Partner",
+      lead:"Throughout the term of this agreement the Partner enjoys the following rights:",
+      items:[
+        "<b>Commission.</b> A fixed commission on every lot traded by their referred clients in eligible instruments, according to the level of their agency and the instrument group traded.",
+        "<b>Free withdrawal.</b> Withdrawal of commission from the first dollar, at any level, with no lock-up, no promotion requirement and no minimum, by any method available on the platform.",
+        "<b>Level permanence.</b> Retention of the highest level the agency reaches, which does not lapse on a temporary decline in performance.",
+        "<b>Fair promotion.</b> Promotion between levels based solely on the number of active clients and traded volume, with no deposit requirement of any kind.",
+        "<b>Additional incentives.</b> The benefit of the incentives and rewards the Company sets above the base commission, as set out in the Partner Programme document.",
+        "<b>Level matching.</b> Where the Partner is already established with another company, the equivalent level is granted from their first day with the Company on production of their commission statement.",
+        "<b>Tools and support.</b> A dashboard showing their clients, traded volumes and balances; ready marketing material; and the technical and administrative support needed to run their agency."
+      ]},
+
+    { id:"company", nav:"Company obligations", h:"Article 3: Obligations of the Company",
+      items:[
+        "The Company undertakes to credit commission to the Partner's balance within minutes of an eligible trade closing, and to make it available for immediate withdrawal.",
+        "The Company undertakes to keep trading costs for the Partner's clients unchanged across all four levels, so that the Partner's promotion is never funded from the client's account.",
+        "The Company undertakes to provide a secure, professional trading platform for referred clients.",
+        "The Company undertakes to publish the Partner Programme document in the IB Room and to notify partners of any amendment before it takes effect.",
+        "The Company undertakes not to lower the Partner's level, save in the termination cases set out in Article 7."
+      ]},
+
+    { id:"commission", nav:"Commissions", h:"Article 4: Commissions and their calculation",
+      items:[
+        "<b>Nature of commission.</b> Commission is a fixed dollar amount per lot and is not calculated as a share of the spread applied to the client.",
+        "<b>Amounts.</b> The commission for each level and each instrument group, and the cap for each group, are set out in the Partner Programme document published in the IB Room.",
+        "<b>Eligible instruments.</b> Currency pairs, precious metals, commodities including oil, and indices.",
+        "<b>Ineligible instruments.</b> Cryptocurrencies and shares. No commission is calculated on them, and their volume counts neither towards promotion nor towards the agency's historical peak.",
+        "<b>Eligible accounts.</b> Standard, FY and Zero accounts. No commission is calculated on the EA account.",
+        "<b>Client trading conduct.</b> The Partner undertakes to refer clients who trade within the Company's rules. Where a client is found to trade in breach of the <a href=\"https://www.maxifyfx.com/client-agreement\" target=\"_blank\" rel=\"noopener\">prohibited practices</a> set out in the Client Agreement (section 4.4), the Company may close that client's account and no commission is due in respect of them.",
+        "<b>Artificial commission.</b> Any commission arising from manufactured trades carrying no genuine market exposure is deducted or clawed back from the Partner's balance."
+      ]},
+
+    { id:"duties", nav:"Partner obligations", h:"Article 5: Obligations of the Partner",
+      items:[
+        "The Partner undertakes to promote the Company's services professionally and in line with accepted ethical and professional standards.",
+        "The Partner undertakes to provide basic support and guidance to new clients on registration and platform use, without extending to any form of investment advice.",
+        "The Partner undertakes to remain responsive to messages from the Company's team.",
+        "The Partner undertakes to comply with the laws governing advertising, marketing and financial intermediation in their area of operation, and bears sole responsibility for what they publish.",
+        "The Partner undertakes to observe the policies and regulations the Company issues in respect of the partner programme."
+      ],
+      note:"No minimum level of marketing publication is required of the Partner. Publishing is an optional incentive route governed by the Partner Programme document."},
+
+    { id:"red", nav:"Prohibitions", h:"Article 6: Prohibitions", red:true,
+      lead:"The Partner is prohibited from the following, and breach of any of them results in immediate termination of the agency without prior notice:",
+      items:[
+        "Making any promise of guaranteed profit or return to clients in any form.",
+        "Receiving any funds from clients by any means. All deposits are made exclusively through the Company's official channels.",
+        "Providing investment advice or trading recommendations to clients.",
+        "Using the Company's trademark, logo or visual identity without prior written permission, or using the Company's name in any offensive or unauthorised content.",
+        "Disclosing client data, or any information received by virtue of the agency, to any third party.",
+        "Manufacturing trades to generate artificial commission, including offsetting hedges, trading between related accounts, and any pattern designed to produce volume without genuine market exposure."
+      ]},
+
+    { id:"end", nav:"Termination", h:"Article 7: Termination of the agency",
+      lead:"The agency is terminated in the following cases only:",
+      items:[
+        "<b>Continuous dormancy.</b> The Partner ceases to respond to messages from the Company's team for three consecutive months.",
+        "<b>At the Partner's request.</b> On thirty days' written notice.",
+        "<b>Manufactured trades.</b> Where the Partner is found to have carried out trades intended to generate artificial commission.",
+        "<b>Prohibitions.</b> Breach of any provision of Article 6, or damage to the Company's reputation."
+      ],
+      note:"<b>Effect of termination.</b> Commission flow ceases in respect of all clients referred or transferred under the agency from the date of termination, and commissions accrued up to that date are paid to the Partner. Following termination the Partner undertakes to refrain from defaming or disparaging the Company in any form, spoken, written or through social media."},
+
+    { id:"general", nav:"General provisions", h:"Article 8: General provisions",
+      items:[
+        "<b>Promotional content.</b> The Company may use and publish any promotional content the Partner produces about it on its own channels and platforms. The Partner remains responsible for the compliance of what they publish with applicable law.",
+        "<b>Limitation of liability.</b> The Company bears no responsibility for any statement, undertaking or promise made by the Partner to clients or any third party without official approval from management.",
+        "<b>Independence.</b> The Partner is independent in their activity and may work with other companies, provided this does not breach their obligations under this agreement.",
+        "<b>Notices.</b> Notices sent through the IB Room or to the email address registered with the Company take effect from the date of sending."
+      ]}
+  ]
+}
+};
+
+/* =========================================================================
+   B2CORE embed protocol — identical to the compare page.
+   The portal waits for the frame to announce itself, then sends theme + lang.
+   ========================================================================= */
+const q = new URLSearchParams(location.search);
+const B2CORE_ORIGIN = "https://my.maxifyfx.com";
+
+let theme = /light/.test((q.get("theme")||"").toLowerCase()) ? "light" : "dark";
+let lang  = (q.get("lang")||"").toLowerCase().slice(0,2) === "en" ? "en" : "ar";
+
+addEventListener("message", e => {
+  if (e.origin !== B2CORE_ORIGIN || e.source !== window.parent || !e.data) return;
+  const d = e.data;
+  if (d.type === "embed-theme-change"){
+    const next = d.theme === "light-theme" ? "light" : d.theme === "dark-theme" ? "dark" : null;
+    if (next && next !== theme){ theme = next; render(); }
+  }
+  if (d.type === "embed-language-change"){
+    const next = d.lang === "ar" ? "ar" : "en";
+    if (next !== lang){ lang = next; render(); }
+  }
+});
+
+let answered = false;
+addEventListener("message", e => { if (e.origin === B2CORE_ORIGIN) answered = true; });
+const announce = () => { try{ parent.postMessage({type:"embed-iframe-ready"}, B2CORE_ORIGIN); }catch(e){} };
+announce();
+[100, 400, 1200].forEach(ms => setTimeout(() => { if (!answered) announce(); }, ms));
+
+/* =========================================================================
+   RENDER
+   ========================================================================= */
+const $ = id => document.getElementById(id);
+
+function render(){
+  const D = DOC[lang];
+  document.documentElement.lang = lang;
+  document.documentElement.dir  = lang === "ar" ? "rtl" : "ltr";
+  document.documentElement.dataset.theme = theme;
+
+  $("title").textContent = D.title;
+  $("intro").textContent = D.intro;
+  $("legal").textContent = D.legal;
+
+  $("body").innerHTML = D.sections.map((s,i) => {
+    const lead   = s.lead  ? `<p class="note">${s.lead}</p>` : "";
+    const boxes  = s.boxes ? `<div class="grid2">` + s.boxes.map(b =>
+        `<div class="box ${b.no?"no":""}"><h3>${b.t}</h3><p>${b.v}</p></div>`).join("") + `</div>` : "";
+    const items  = s.items ? `<ul class="items">` + s.items.map(x => `<li>${x}</li>`).join("") + `</ul>` : "";
+    const tables = s.tables ? s.tables.map(tb =>
+        `<figure class="tw"><figcaption>${tb.cap}</figcaption><div class="scroll"><table>` +
+        `<thead><tr>` + tb.head.map(x => `<th>${x}</th>`).join("") + `</tr></thead><tbody>` +
+        tb.rows.map(r => `<tr>` + r.map((c,i) =>
+          `<td class="${i===0?"lv":""} ${i===r.length-1?"tot":""}">${c}</td>`).join("") + `</tr>`).join("") +
+        `</tbody></table></div></figure>`).join("") : "";
+    const note   = s.note  ? `<p class="note">${s.note}</p>` : "";
+    return `<section id="${s.id}" class="${s.red?"red":""}">
+      <h2>${s.h}</h2>
+      ${lead}${tables}${boxes}${items}${note}
+    </section>`;
+  }).join("");
+}
+
+console.log("ib-contract build 4 | theme:", theme, "| lang:", lang);
+render();
+</script>
+</body>
+</html>
